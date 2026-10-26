@@ -1,0 +1,9 @@
+{
+  "target_lufs": -24,
+  "max_layers": 5,
+  "masking_db": 6,
+  "dominance_share_pct": 80,
+  "max_event_rate_focus": 6,
+  "stereo_imbalance_db": 6,
+  "bands_hz": {"low": [20, 250], "mid": [250, 4000], "high": [4000, 16000]}
+}

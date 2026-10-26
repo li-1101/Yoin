@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yoin"
+version = "0.1.0"
+description = "Yoin（余韵）— Your Own Inner Nook"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "soundfile>=0.12",
+  "pyloudnorm>=0.1.1",
+  "pydantic>=2.6,<3",
+  "openai>=1.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["yoin*"]

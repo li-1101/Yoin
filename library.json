@@ -1,0 +1,178 @@
+[
+  {
+    "id": "noise_white_01",
+    "name": "白噪声（占位）",
+    "description": "持续均匀的嘶嘶声，高频较明显",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/noise_white_01.wav",
+    "tags": [
+      "噪声",
+      "明亮"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "rain_pink_01",
+    "name": "细雨（占位）",
+    "description": "均匀的沙沙声，近似中小雨；由粉噪声合成",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/rain_pink_01.wav",
+    "tags": [
+      "雨",
+      "均匀"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "rain_brown_01",
+    "name": "远雨（占位）",
+    "description": "偏低沉的连续噪声，近似远处大雨或瀑布",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/rain_brown_01.wav",
+    "tags": [
+      "雨",
+      "低沉",
+      "远处"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "roomtone_01",
+    "name": "房间底噪（占位）",
+    "description": "很轻的低频背景，用于填充安静空间",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/roomtone_01.wav",
+    "tags": [
+      "室内",
+      "底噪"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "pad_soft_01",
+    "name": "柔和和弦（占位）",
+    "description": "正弦波 C 大三和弦，音量缓慢起伏；不是爵士乐",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/pad_soft_01.wav",
+    "tags": [
+      "和弦",
+      "柔和"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": "C major",
+    "bpm": null
+  },
+  {
+    "id": "tick_soft_01",
+    "name": "轻短声（占位）",
+    "description": "很短的滤波噪声脉冲，近似轻微翻书或键盘声",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/tick_soft_01.wav",
+    "tags": [
+      "短声",
+      "轻微"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "chime_01",
+    "name": "铃音（占位）",
+    "description": "有明确音高的衰减合成铃音",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/chime_01.wav",
+    "tags": [
+      "铃声",
+      "清脆"
+    ],
+    "mood": [
+      "安静"
+    ],
+    "good_for": [
+      "专注"
+    ],
+    "placeholder": true,
+    "source": "程序生成",
+    "license": "CC0",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  }
+]

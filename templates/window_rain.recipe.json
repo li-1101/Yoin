@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "title": "窗边雨夜",
+  "seed": 0,
+  "layers": [
+    {"layer_id": "rain", "sound_id": "rain_pink_01", "volume": 0.6, "pan": -0.15, "distance": 0.5, "brightness": 0.5},
+    {"layer_id": "harmony", "sound_id": "pad_soft_01", "volume": 0.3, "pan": 0.1, "distance": 0.7, "brightness": 0.35},
+    {"layer_id": "paper", "sound_id": "tick_soft_01", "volume": 0.16, "pan": 0.3, "distance": 0.3, "brightness": 0.4, "events_per_minute": 2, "randomness": 0.5}
+  ],
+  "room": {"type": "small_room", "amount": 0.2}
+}
