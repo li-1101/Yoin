@@ -90,6 +90,8 @@ def chinese_validation_error(exc: ValidationError, label: str) -> YoinError:
             message = f"必须小于或等于 {context['le']}"
         elif kind == "greater_than":
             message = f"必须大于 {context['gt']}"
+        elif kind == "less_than":
+            message = f"必须小于 {context['lt']}"
         elif kind == "literal_error":
             message = "取值不在允许范围内"
         elif kind == "extra_forbidden":

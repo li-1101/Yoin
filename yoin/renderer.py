@@ -5,12 +5,12 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
-import pyloudnorm as pyln
 from scipy import signal
 
 from .config import MAX_SECONDS, RENDERER_VERSION, SAMPLE_RATE
 from .errors import YoinError
 from .library import SoundLibrary
+from .levels import loudness_lufs, peak_dbfs
 from .schema import Layer, Recipe, validate_recipe
 
 ROOM_SECONDS = {"none": 0.0, "small_room": 0.4, "wooden_cabin": 0.8, "hall": 2.0}
@@ -125,18 +125,6 @@ def _convolve(audio: np.ndarray, ir: np.ndarray) -> np.ndarray:
     ).astype(np.float32)
 
 
-def _peak_dbfs(audio: np.ndarray) -> float | None:
-    peak = float(np.max(np.abs(audio)))
-    return 20 * math.log10(peak) if peak > 0 else None
-
-
-def _loudness(meter: pyln.Meter, audio: np.ndarray) -> float | None:
-    if not np.any(audio):
-        return None
-    value = float(meter.integrated_loudness(audio))
-    return value if math.isfinite(value) else None
-
-
 def render(
     recipe: Recipe | dict,
     library: SoundLibrary,
@@ -185,9 +173,8 @@ def render(
     if not np.isfinite(dry_mix).all():
         raise YoinError("混音包含非有限数值，请降低素材校准增益或检查音频文件")
 
-    meter = pyln.Meter(SAMPLE_RATE)
-    pre_loudness = _loudness(meter, dry_mix)
-    pre_peak = _peak_dbfs(dry_mix)
+    pre_loudness = loudness_lufs(dry_mix)
+    pre_peak = peak_dbfs(dry_mix)
     gain = 10 ** ((target_lufs - pre_loudness) / 20) if pre_loudness is not None else 1.0
     peak = float(np.max(np.abs(dry_mix)))
     if peak > 0:
@@ -205,6 +192,6 @@ def render(
         master_gain=float(gain32),
         pre_master_loudness_lufs=pre_loudness,
         pre_master_peak_dbfs=pre_peak,
-        loudness_lufs=_loudness(meter, dry_mix),
-        peak_dbfs=_peak_dbfs(dry_mix),
+        loudness_lufs=loudness_lufs(dry_mix),
+        peak_dbfs=peak_dbfs(dry_mix),
     )

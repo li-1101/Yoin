@@ -1,7 +1,6 @@
 """项目路径和 v0 的运行约定。"""
 
 import json
-import math
 import os
 from pathlib import Path
 
@@ -25,16 +24,3 @@ def read_json(path: Path):
         raise YoinError(f"无法读取文件：{path}") from exc
     except json.JSONDecodeError as exc:
         raise YoinError(f"JSON 格式错误：{path}，第 {exc.lineno} 行第 {exc.colno} 列") from exc
-
-
-def target_lufs(root: Path) -> float:
-    rules = read_json(root / "mixing_rules.json")
-    value = rules.get("target_lufs", -24) if isinstance(rules, dict) else None
-    if (
-        isinstance(value, bool)
-        or not isinstance(value, (int, float))
-        or not math.isfinite(value)
-        or value >= 0
-    ):
-        raise YoinError("混音规则的 target_lufs 必须是小于 0 的有限数值")
-    return float(value)

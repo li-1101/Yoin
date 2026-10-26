@@ -65,3 +65,14 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
                 self.assertIn("此开关不接受值", result.stderr)
                 self.assertNotIn("ignored explicit", result.stderr)
+
+    def test_analysis_can_be_saved_and_cannot_overwrite_recipe(self):
+        analysis_path = self.root / "analysis.json"
+        result = self.call(str(self.recipe_path), "--seconds", "1", "--out", "out.wav", "--analysis", str(analysis_path))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("advice", json.loads(analysis_path.read_text()))
+        before = self.recipe_path.read_bytes()
+        rejected = self.call(str(self.recipe_path), "--out", "other.wav", "--analysis", str(self.recipe_path))
+        self.assertEqual(rejected.returncode, 2)
+        self.assertEqual(before, self.recipe_path.read_bytes())
+        self.assertFalse((self.root / "other.wav").exists())

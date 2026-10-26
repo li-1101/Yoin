@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — 渲染后得到测量与混音建议。
 
-**Status:** ready-for-agent
+**Status:** in-progress
 
 - [ ] 使用环境变量配置的兼容工具调用接口，无 agent 框架。
 - [ ] 最多八轮；出现建议后至少调整一次，允许解释后带建议提交。
