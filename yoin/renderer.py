@@ -70,6 +70,9 @@ def _events(source: np.ndarray, frames: int, layer: Layer, rng: np.random.Genera
         return output, ()
     # m = 60 / rate；首个事件 uniform(0,m)，后续间隔 uniform(m(1-.9r),m(1+.9r))。
     interval = 60 / layer.events_per_minute
+    if not math.isfinite(interval):
+        # 极低频率对应超出浮点范围的间隔，有限渲染时长内按无事件处理。
+        return output, ()
     spread = 0.9 * layer.randomness
     moment = float(rng.uniform(0, interval))
     while moment < frames / SAMPLE_RATE:

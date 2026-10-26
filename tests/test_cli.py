@@ -22,9 +22,9 @@ class CliTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def call(self, *args):
+    def call(self, *args, module="yoin.render"):
         environment = dict(os.environ, YOIN_PROJECT_DIR=str(self.root))
-        return subprocess.run([sys.executable, "-m", "yoin.render", *args], cwd=self.root,
+        return subprocess.run([sys.executable, "-m", module, *args], cwd=self.root,
                               env=environment, capture_output=True, text=True, timeout=30)
 
     def test_render_command_from_another_working_directory(self):
@@ -57,3 +57,11 @@ class CliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("不能覆盖声音库素材", result.stderr)
         self.assertEqual(before, (self.root / "mono.wav").read_bytes())
+
+    def test_flag_with_explicit_value_has_chinese_error(self):
+        for module, flag in [("yoin.make_placeholders", "--force=true"), ("yoin.render", "--help=true")]:
+            with self.subTest(module=module):
+                result = self.call(flag, module=module)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("此开关不接受值", result.stderr)
+                self.assertNotIn("ignored explicit", result.stderr)

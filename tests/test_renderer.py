@@ -80,6 +80,13 @@ class RendererTests(unittest.TestCase):
                 self.assertIsNone(result.peak_dbfs)
                 self.assertTrue(np.isfinite(result.audio).all())
 
+    def test_extremely_low_event_rate_is_silent_without_overflow(self):
+        for rate in [1e-308, 1e-323]:
+            with self.subTest(rate=rate):
+                result = render(recipe("pulse", events_per_minute=rate), self.library, 1)
+                self.assertEqual(result.event_times["pulse"], ())
+                self.assertFalse(np.any(result.audio))
+
     def test_room_contributions_sum_to_mix(self):
         data = recipe(layer_id="rain")
         data["layers"].append(recipe("stereo", layer_id="music")["layers"][0])
@@ -104,14 +111,15 @@ class RendererTests(unittest.TestCase):
 
     def test_streams_are_stable_across_duration_and_unrelated_layers(self):
         data = recipe("pulse", layer_id="accent", events_per_minute=10, randomness=0.8)
-        short = render(data, self.library, 3)
+        short = render(data, self.library, 6)
         longer_data = copy.deepcopy(data)
         longer_data["layers"].insert(0, recipe(layer_id="bed")["layers"][0])
-        longer = render(longer_data, self.library, 5)
-        expected = tuple(time for time in longer.event_times["accent"] if time < 3)
+        longer = render(longer_data, self.library, 8)
+        self.assertGreater(len(short.event_times["accent"]), 0)
+        expected = tuple(time for time in longer.event_times["accent"] if time < 6)
         self.assertEqual(short.event_times["accent"], expected)
         np.testing.assert_allclose(short.stems["accent"] / short.master_gain,
-                                   longer.stems["accent"][:3 * SAMPLE_RATE] / longer.master_gain, atol=1e-7)
+                                   longer.stems["accent"][:6 * SAMPLE_RATE] / longer.master_gain, atol=1e-7)
 
     def test_calibration_gain_applies_before_mastering(self):
         baseline = render(recipe(), self.library, 2)

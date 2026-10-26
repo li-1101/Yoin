@@ -26,6 +26,7 @@ class ChineseArgumentParser(argparse.ArgumentParser):
         message = message.replace("the following arguments are required:", "缺少必填参数：")
         message = message.replace("unrecognized arguments:", "无法识别的参数：")
         message = message.replace("expected one argument", "需要提供一个值")
+        message = message.replace("ignored explicit argument", "此开关不接受值")
         message = re.sub(r"\bargument\b", "参数", message)
         self.print_usage(sys.stderr)
         self.exit(2, f"参数错误：{message}\n")
