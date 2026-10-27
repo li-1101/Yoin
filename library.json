@@ -177,15 +177,15 @@
   },
   {
     "id": "water_drop_01",
-    "name": "水滴",
-    "description": "下载素材中截取的一次水滴短声，无持续雨声铺底。",
+    "name": "细碎水声（旧版）",
+    "description": "旧版截取的细碎短水声，听感较接近水流。保留用于重现旧配方；新的单颗水滴请用water_drop_single_01。",
     "kind": "event",
     "channels": "mono",
     "file": "sounds/recorded/water_drop_01.wav",
     "tags": [
-      "水滴",
-      "短声",
-      "稀疏"
+      "水声",
+      "细碎",
+      "旧版"
     ],
     "mood": [
       "平静"
@@ -310,6 +310,34 @@
     "source": "Erik Satie；音源：Teknopazzo — https://commons.wikimedia.org/wiki/File:Gymnopedie_No._1..ogg",
     "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
     "gain_db": -6.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "water_drop_single_01",
+    "name": "单颗水滴",
+    "description": "口部与手部制作的单颗水滴拟音，保留一次短促滴声及自然衰减。每次触发仅一滴，约0.33秒，适合滴声之间留出安静间隙。",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/recorded/water_drop_single_01.wav",
+    "tags": [
+      "水滴",
+      "单颗",
+      "短声",
+      "拟音"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "paespedro（口部与手部拟音） — https://freesound.org/people/paespedro/sounds/174718/",
+    "license": "CC0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
     "tonal": true,
     "musical_key": null,
     "bpm": null

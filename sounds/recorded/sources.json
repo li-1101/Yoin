@@ -76,6 +76,34 @@
       "output_seconds": 0.91,
       "source_sha256": "63678a2a994d8854e9dcbefc12ad78f5fde862e210b3ac94930e67db4e10cd18",
       "output_sha256": "2b00ad17252e76aceab0f50ab097fa01372aab64b737362dfcc7cbc39c32d985"
+    },
+    {
+      "id": "water_drop_single_01",
+      "name": "单颗水滴",
+      "input": "single-drop-paespedro-hq.mp3",
+      "start": 0.01,
+      "end": 0.34,
+      "cutoff": 4500,
+      "author": "paespedro",
+      "source_url": "https://freesound.org/people/paespedro/sounds/174718/",
+      "download_url": "https://cdn.freesound.org/previews/174/174718_1850811-hq.mp3",
+      "download_kind": "public HQ preview",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "description": "口部与手部制作的单颗水滴拟音，保留一次短促滴声及自然衰减。",
+      "tags": [
+        "水滴",
+        "单颗",
+        "短声",
+        "拟音"
+      ],
+      "output": "sounds/recorded/water_drop_single_01.wav",
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "output_seconds": 0.33,
+      "source_sha256": "fb0e416387b3d0cb23f7595d143edcc9eb4ba5906ebcaf61e33ddd14695e6d9e",
+      "output_sha256": "9e9a6b725b4a1d3f907ff19fbdd220a5889b68a230a90971fd7e1b44f8d86d59",
+      "retrieved_on": "2026-10-27"
     }
   ]
 }

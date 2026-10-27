@@ -13,7 +13,8 @@ class RecordingTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         library = load_library(root / "library.json")
         manifest = json.loads((root / "sounds" / "recorded" / "sources.json").read_text())
-        self.assertEqual(len(manifest["sources"]), 3)
+        self.assertEqual({source["id"] for source in manifest["sources"]},
+                         {"water_drop_01", "water_drop_single_01", "bird_chirp_01", "book_page_01"})
         for source in manifest["sources"]:
             with self.subTest(sound=source["id"]):
                 sound = library.sounds[source["id"]]

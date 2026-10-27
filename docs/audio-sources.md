@@ -6,7 +6,8 @@
 
 | 素材 | 作者和原始页面 | 许可 |
 | --- | --- | --- |
-| 水滴 | [Water Drops — CeoxBlackj](https://opengameart.org/content/water-drops) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| 单颗水滴（默认） | [Single Water Drop — paespedro](https://freesound.org/people/paespedro/sounds/174718/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| 细碎水声（旧版） | [Water Drops — CeoxBlackj](https://opengameart.org/content/water-drops) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | 鸟叫 | [Bird chirping sounds — syncopika](https://lpc.opengameart.org/content/bird-chirping-sounds) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | 翻书页 | [Page Turning Sfx Sound Effect — Nicole Marie T](https://opengameart.org/content/page-turning-sfx-sound-effect) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 
@@ -17,6 +18,11 @@
 用户反馈之前的合成雨声高频刺耳。新阅读模板不使用持续噪声铺底，关闭房间混响，
 降低鸟叫和翻页的明暗、突出程度，并将规则中的目标响度从 -24 调整为 -30 LUFS。
 这是本次试听调整，渲染公式保持不变。
+
+用户进一步反馈旧水声听起来像水流。默认水层改为 `water_drop_single_01`，选用 paespedro 的单颗水滴拟音。
+原作者说明为口部与手部制作；使用公开 HQ MP3 预览，截取 0.01–0.34 秒并按清单处理。
+每次事件约 0.33 秒，滴声之间留白；旧文件和旧 sound_id 保留，历史音频不会被覆盖。
+本机单独试听：`runs/water-drop-single-preview.wav`，12 秒内有四次滴声。
 
 ## 古典音乐
 
