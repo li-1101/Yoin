@@ -1,6 +1,5 @@
 """逐条追加过程记录，保存本轮实际使用的输入和输出。"""
 
-import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -8,7 +7,6 @@ from pathlib import Path
 
 from .errors import YoinError
 from .files import write_json
-from .library import SoundLibrary
 
 
 def utc_now() -> str:
@@ -43,17 +41,3 @@ class RunTrace:
 
     def save_json(self, filename: str, data) -> None:
         write_json(self.directory / filename, data)
-
-
-def sound_snapshot(library: SoundLibrary) -> list[dict]:
-    assets = []
-    for sound in library.sounds.values():
-        path = library.root / sound.file
-        try:
-            with path.open("rb") as file:
-                digest = hashlib.file_digest(file, "sha256").hexdigest()
-            assets.append({"sound_id": sound.id, "file": sound.file, "sha256": digest})
-        except OSError:
-            # 未选中的素材缺失不阻止其他素材使用，工具会在实际选用时返回中文错误。
-            assets.append({"sound_id": sound.id, "file": sound.file, "sha256": None})
-    return assets

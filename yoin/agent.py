@@ -11,7 +11,7 @@ from .library import load_library
 from .prompts import build_prompt
 from .rules import load_rules
 from .tools import ToolSession, tool_definitions
-from .trace import RunTrace, sound_snapshot
+from .trace import RunTrace
 
 
 def _assistant_message(response: dict) -> dict:
@@ -66,7 +66,7 @@ def run_agent(
             "user_request": user_request, "system_prompt": context.system_prompt,
             "guidance": context.guidance, "templates": context.templates,
             "library": [sound.model_dump(exclude_none=True) for sound in library.sounds.values()],
-            "sound_files": sound_snapshot(library), "rules": rules.model_dump(), "tools": definitions,
+            "sound_files": library.freeze_sources(), "rules": rules.model_dump(), "tools": definitions,
             "model": model_info or {}, "app_version": __version__, "renderer_version": RENDERER_VERSION,
             "final_seconds": final_seconds, "max_steps": MAX_STEPS,
         })

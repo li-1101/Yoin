@@ -1,4 +1,5 @@
 import json
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -61,6 +62,35 @@ class AgentTests(unittest.TestCase):
         self.assertIn("Used Author", text)
         self.assertNotIn("Unused Author", text)
         self.assertTrue((Path(final["run_directory"]) / "final.credits.md").is_file())
+
+    def test_asset_changes_during_model_request_do_not_change_used_snapshot(self):
+        original_hash = hashlib.sha256((self.root / "mono.wav").read_bytes()).hexdigest()
+        model = ScriptedModel([completion(preview()), completion(submit())])
+
+        def replace_then_complete(messages, tools):
+            sf.write(self.root / "mono.wav", np.zeros((96000, 1), dtype=np.float32), 48000, subtype="FLOAT")
+            return model.complete(messages, tools)
+
+        final = run_agent("安静", self.root, replace_then_complete, final_seconds=1)
+        inputs = json.loads((Path(final["run_directory"]) / "inputs.json").read_text())
+        snapshot = next(item for item in inputs["sound_files"] if item["sound_id"] == "mono")
+        self.assertEqual(snapshot["sha256"], original_hash)
+        self.assertNotEqual(hashlib.sha256((self.root / "mono.wav").read_bytes()).hexdigest(), original_hash)
+        rendered, _ = sf.read(final["audio_file"])
+        self.assertTrue(np.any(rendered))
+
+    def test_unavailable_asset_stays_unavailable_within_run(self):
+        (self.root / "stereo.wav").unlink()
+        model = ScriptedModel([completion(preview(recipe("stereo"))), completion(preview()), completion(submit())])
+
+        def add_then_complete(messages, tools):
+            sf.write(self.root / "stereo.wav", np.zeros((96000, 2), dtype=np.float32), 48000, subtype="FLOAT")
+            return model.complete(messages, tools)
+
+        final = run_agent("安静", self.root, add_then_complete, final_seconds=1)
+        result = next(event["result"] for event in self.trace(final["run_directory"]) if event["type"] == "tool_result")
+        self.assertFalse(result["success"])
+        self.assertIn("本轮开始时", result["error"])
 
     def test_warnings_require_real_adjustment_but_can_remain_at_submit(self):
         first = recipe(layer_id="rain")

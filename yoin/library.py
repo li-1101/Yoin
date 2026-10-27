@@ -1,6 +1,8 @@
 """加载声音资料与音频，素材路径始终相对声音目录文件解析。"""
 
 from dataclasses import dataclass, field
+import hashlib
+from io import BytesIO
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +19,21 @@ class SoundLibrary:
     root: Path
     sounds: dict[str, Sound]
     _audio: dict[str, np.ndarray] = field(default_factory=dict, repr=False)
+    _source_bytes: dict[str, bytes | None] = field(default_factory=dict, repr=False)
+
+    def freeze_sources(self) -> list[dict]:
+        """固定本轮素材字节，并返回与实际解码同一份字节的 SHA256。"""
+        sources = []
+        for sound in self.sounds.values():
+            if sound.id not in self._source_bytes:
+                try:
+                    self._source_bytes[sound.id] = (self.root / sound.file).read_bytes()
+                except OSError:
+                    self._source_bytes[sound.id] = None
+            content = self._source_bytes[sound.id]
+            sources.append({"sound_id": sound.id, "file": sound.file,
+                            "sha256": hashlib.sha256(content).hexdigest() if content is not None else None})
+        return sources
 
     def credits(self, recipe: Recipe) -> str:
         lines = []
@@ -33,8 +50,11 @@ class SoundLibrary:
         if sound is None:
             raise YoinError(f"声音不存在：{sound_id}")
         path = self.root / sound.file
+        if sound_id in self._source_bytes and self._source_bytes[sound_id] is None:
+            raise YoinError(f"本轮开始时无法读取素材『{sound_id}』，请修复文件后重新运行")
         try:
-            audio, rate = sf.read(path, dtype="float32", always_2d=True)
+            content = self._source_bytes[sound_id] if sound_id in self._source_bytes else path.read_bytes()
+            audio, rate = sf.read(BytesIO(content), dtype="float32", always_2d=True)
         except (OSError, RuntimeError) as exc:
             raise YoinError(f"无法读取声音文件：{path}；请检查路径或先生成占位声音") from exc
         if rate != SAMPLE_RATE:
@@ -45,6 +65,7 @@ class SoundLibrary:
         if not len(audio) or not np.isfinite(audio).all():
             raise YoinError(f"声音『{sound_id}』必须非空，且不能包含非有限数值")
         audio.flags.writeable = False
+        self._source_bytes[sound_id] = content
         self._audio[sound_id] = audio
         return audio
 
