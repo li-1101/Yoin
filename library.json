@@ -341,5 +341,121 @@
     "tonal": true,
     "musical_key": null,
     "bpm": null
+  },
+  {
+    "id": "ocean_waves_01",
+    "name": "海浪拍岸",
+    "description": "石滩近处缓慢浪涌、拍岸和退浪的环境录音，保留海浪自然的起伏。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/ambience/ocean_waves_01.flac",
+    "tags": [
+      "海浪",
+      "海边",
+      "拍岸",
+      "自然"
+    ],
+    "mood": [
+      "开阔",
+      "平静"
+    ],
+    "good_for": [
+      "放松",
+      "阅读"
+    ],
+    "placeholder": false,
+    "source": "Kinoton — https://freesound.org/people/Kinoton/sounds/635917/",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "wind_leaves_01",
+    "name": "风吹树叶",
+    "description": "公园树间风声与树叶沙沙声的环境录音，适合作为室外场景的连续背景。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/ambience/wind_leaves_01.flac",
+    "tags": [
+      "风声",
+      "树叶",
+      "公园",
+      "自然"
+    ],
+    "mood": [
+      "自然",
+      "平静"
+    ],
+    "good_for": [
+      "专注",
+      "阅读"
+    ],
+    "placeholder": false,
+    "source": "alppdcjr12 — https://freesound.org/people/alppdcjr12/sounds/662575/",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "campfire_01",
+    "name": "篝火噼啪",
+    "description": "近距离篝火录音，包含低沉燃烧声与细碎噼啪声；原音源按循环背景制作。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/ambience/campfire_01.flac",
+    "tags": [
+      "篝火",
+      "火焰",
+      "噼啪",
+      "木柴"
+    ],
+    "mood": [
+      "温暖",
+      "安静"
+    ],
+    "good_for": [
+      "夜晚",
+      "阅读"
+    ],
+    "placeholder": false,
+    "source": "Nox_Sound — https://freesound.org/people/Nox_Sound/sounds/558967/",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "night_crickets_01",
+    "name": "夏夜虫鸣",
+    "description": "夏夜庭院里的蟋蟀虫鸣环境录音；原作者已清理背景风暴噪声，适合低音量夜晚背景。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/ambience/night_crickets_01.flac",
+    "tags": [
+      "虫鸣",
+      "蟋蟀",
+      "夏夜",
+      "自然"
+    ],
+    "mood": [
+      "夜晚",
+      "自然"
+    ],
+    "good_for": [
+      "放松",
+      "夜间"
+    ],
+    "placeholder": false,
+    "source": "Defelozedd94 — https://freesound.org/people/Defelozedd94/sounds/522298/",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
   }
 ]

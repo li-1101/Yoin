@@ -43,3 +43,26 @@
 音乐已登记进 `library.json`，下一次生成会自动载入。例如输入：
 “用巴赫 C 大调前奏曲做很轻的背景，偶尔翻页，不要雨声”。默认不同时叠加两首音乐。
 运行时仍按现有 loop 逻辑取段；库中整曲保持完整。
+
+## 环境声
+
+用户确认保留现有水滴后，新增四种环境录音。下面四份具体音源的来源页面均标记为 CC0，
+可免费商用和改编；本轮使用公开 HQ MP3 预览，原始无损文件需要在来源网站登录下载。
+
+| 素材 | 音源与 CC0 来源 | 库内片段 | sound_id |
+| --- | --- | --- | --- |
+| 海浪拍岸 | [Slow Waves, Stony Beach — Kinoton](https://freesound.org/people/Kinoton/sounds/635917/) | 45 秒 | `ocean_waves_01` |
+| 风吹树叶 | [Wind in trees 1.mp3 — alppdcjr12](https://freesound.org/people/alppdcjr12/sounds/662575/) | 40 秒 | `wind_leaves_01` |
+| 篝火噼啪 | [Ambiance_Campfire_Loop_Stereo.wav — Nox_Sound](https://freesound.org/people/Nox_Sound/sounds/558967/) | 约 12.73 秒 | `campfire_01` |
+| 夏夜虫鸣 | [Crickets At Night - Clean sound — Defelozedd94](https://freesound.org/people/Defelozedd94/sounds/522298/) | 45 秒 | `night_crickets_01` |
+
+获取日期：2026-10-27。处理后片段保存在 `sounds/ambience/`，登记为 loop，并保留立体声。
+重采样为 48000 Hz，加 30 Hz 二阶高通、20 ms 首尾淡化，峰值校准为 0.25，以 24 位 PCM FLAC 保存。
+FLAC 是转存格式，不代表恢复了 MP3 来源丢失的信息。完整取段、来源和前后哈希见
+[`sounds/ambience/sources.json`](../sounds/ambience/sources.json)。
+
+本机 `runs/ambience-preview/` 提供四段独立的 30 秒试听及 `index.html` 试听页。
+试听用现有渲染器生成，目标 -30 LUFS，关闭混响，导出为兼容常见播放器的 16 位 PCM WAV。
+素材库和标准 agent 的内部渲染仍为 float32。当前水滴与已有混音没有重新替换或覆盖。
+
+下一次生成可直接说：“黄昏海边，以轻海浪为主，偶尔翻页，不要音乐”。
