@@ -10,6 +10,7 @@ from .files import write_json, write_wav
 from .library import load_library
 from .renderer import render
 from .rules import load_rules
+from .schema import validate_recipe
 
 
 def main() -> int:
@@ -31,14 +32,24 @@ def main() -> int:
         sound_paths = {(library.root / sound.file).resolve() for sound in library.sounds.values()}
         if output_path in sound_paths:
             raise YoinError("输出路径不能覆盖声音库素材")
+        input_paths = {path.resolve() for path in (recipe_path, root / "library.json", root / "mixing_rules.json")}
+        if output_path in input_paths:
+            raise YoinError("输出路径不能覆盖配方、声音目录或混音规则")
         if args.analysis is not None:
-            protected = sound_paths | {recipe_path, output_path, root / "library.json", root / "mixing_rules.json"}
+            protected = sound_paths | input_paths | {output_path}
             if args.analysis.suffix.lower() != ".json" or args.analysis.resolve() in protected:
                 raise YoinError("分析输出必须是 .json，且不能覆盖输入、素材、规则或音频输出")
         rules = load_rules(root / "mixing_rules.json")
-        result = render(read_json(recipe_path), library, args.seconds, target_lufs=rules.target_lufs)
+        recipe = validate_recipe(read_json(recipe_path), library.sounds)
+        credits = library.credits(recipe)
+        credits_path = args.out.with_suffix(".credits.md")
+        if credits and credits_path.resolve() in sound_paths | input_paths:
+            raise YoinError("来源说明输出不能覆盖配方、素材或规则")
+        result = render(recipe, library, args.seconds, target_lufs=rules.target_lufs)
         report = analyze(result, rules) if args.analysis is not None else None
         write_wav(args.out, result.audio, result.sample_rate)
+        if credits:
+            credits_path.write_text(credits + "\n", encoding="utf-8")
         if report is not None:
             write_json(args.analysis, report)
             print(f"分析已保存：{args.analysis}；混音建议：{len(report['warnings'])} 条")

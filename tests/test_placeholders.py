@@ -72,6 +72,21 @@ class PlaceholderTests(unittest.TestCase):
             audio, _ = sf.read(root / "sounds" / "tick_soft_01.wav", dtype="float32")
             np.testing.assert_array_equal(audio, self.library.audio("tick_soft_01")[:, 0])
 
+    def test_generation_preserves_added_recordings_and_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = json.loads((self.root / "library.json").read_text())
+            custom = dict(catalog[-1], id="recording", placeholder=False, file="recording.wav", source="下载素材作者")
+            catalog.append(custom)
+            (root / "library.json").write_text(json.dumps(catalog), encoding="utf-8")
+            original = (self.root / "sounds" / "chime_01.wav").read_bytes()
+            (root / "recording.wav").write_bytes(original)
+            make_placeholders(root)
+            self.assertEqual(json.loads((root / "library.json").read_text())[-1], custom)
+            self.assertEqual((root / "recording.wav").read_bytes(), original)
+            make_placeholders(root, force=True)
+            self.assertEqual(json.loads((root / "library.json").read_text())[-1], custom)
+
     def test_wrong_duration_and_malformed_catalog_are_chinese(self):
         with self.assertRaisesRegex(YoinError, "30–60"):
             make_placeholders(self.root, 1)

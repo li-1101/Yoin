@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 from .config import SAMPLE_RATE, read_json
 from .errors import YoinError
-from .schema import Sound, chinese_validation_error
+from .schema import Recipe, Sound, chinese_validation_error
 
 
 @dataclass
@@ -17,6 +17,14 @@ class SoundLibrary:
     root: Path
     sounds: dict[str, Sound]
     _audio: dict[str, np.ndarray] = field(default_factory=dict, repr=False)
+
+    def credits(self, recipe: Recipe) -> str:
+        lines = []
+        for sound_id in dict.fromkeys(layer.sound_id for layer in recipe.layers):
+            sound = self.sounds[sound_id]
+            if not sound.placeholder and sound.source:
+                lines.append(f"- {sound.name}：{sound.source}；许可：{sound.license}。已进行截取、重采样、滤波或电平调整。")
+        return "\n".join(lines)
 
     def audio(self, sound_id: str) -> np.ndarray:
         if sound_id in self._audio:

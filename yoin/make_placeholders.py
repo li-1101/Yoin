@@ -99,8 +99,22 @@ def make_placeholders(root: Path | str, seconds: int = 30, *, force: bool = Fals
             "tonal": tonal, "musical_key": "C major" if sound_id == "pad_soft_01" else None,
             "bpm": None,
         })
+    existing = []
+    if catalog_path.exists():
+        try:
+            existing = read_json(catalog_path)
+        except YoinError:
+            if not force:
+                raise
+        if not isinstance(existing, list) or any(not isinstance(item, dict) or not isinstance(item.get("id"), str) for item in existing):
+            if not force:
+                raise YoinError("已有声音目录必须是包含 id 的声音数组")
+            existing = []
+    generated_ids = {sound["id"] for sound in sounds}
+    extras = [sound for sound in existing if sound["id"] not in generated_ids]
+    existing_generated = [sound for sound in existing if sound["id"] in generated_ids]
     targets = [root / sound["file"] for sound in sounds]
-    existing_catalog_changed = not force and catalog_path.exists() and read_json(catalog_path) != sounds
+    existing_catalog_changed = bool(existing_generated) and existing_generated != sounds
     if not force and (existing_catalog_changed or any(path.exists() for path in targets)):
         raise YoinError("已有声音目录修改或占位素材已存在；重新生成请使用 --force（会覆盖同名文件）")
     (root / "sounds").mkdir(parents=True, exist_ok=True)
@@ -113,7 +127,7 @@ def make_placeholders(root: Path | str, seconds: int = 30, *, force: bool = Fals
             sf.write(path, audio, SAMPLE_RATE, subtype="FLOAT", format="WAV")
         except (RuntimeError, OSError) as exc:
             raise YoinError(f"无法写入占位声音：{path}") from exc
-    catalog_path.write_text(json.dumps(sounds, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    catalog_path.write_text(json.dumps(sounds + extras, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return catalog_path
 
 

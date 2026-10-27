@@ -8,3 +8,4 @@ runs/
 sounds/*.wav
 dist/
 build/
+.scratch/audio-import/originals/

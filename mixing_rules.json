@@ -1,5 +1,5 @@
 {
-  "target_lufs": -24,
+  "target_lufs": -30,
   "max_layers": 5,
   "masking_db": 6,
   "dominance_share_pct": 80,

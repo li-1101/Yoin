@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "title": "安静阅读：水滴、远处鸟鸣与翻页",
+  "seed": 23,
+  "layers": [
+    {"layer_id": "water", "sound_id": "water_drop_01", "volume": 0.38, "pan": -0.12, "distance": 0.5, "brightness": 0.12, "events_per_minute": 6, "randomness": 0.65},
+    {"layer_id": "birds", "sound_id": "bird_chirp_01", "volume": 0.4, "pan": 0.25, "distance": 0.8, "brightness": 0.06, "events_per_minute": 2, "randomness": 0.7},
+    {"layer_id": "pages", "sound_id": "book_page_01", "volume": 0.32, "pan": 0.08, "distance": 0.4, "brightness": 0.05, "events_per_minute": 2, "randomness": 0.6}
+  ],
+  "room": {"type": "none", "amount": 0}
+}

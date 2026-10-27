@@ -76,3 +76,22 @@ class CliTests(unittest.TestCase):
         self.assertEqual(rejected.returncode, 2)
         self.assertEqual(before, self.recipe_path.read_bytes())
         self.assertFalse((self.root / "other.wav").exists())
+
+    def test_output_symlink_cannot_overwrite_library_metadata(self):
+        metadata = self.root / "library.json"
+        before = metadata.read_bytes()
+        output = self.root / "metadata-link.wav"
+        output.symlink_to(metadata)
+        rejected = self.call(str(self.recipe_path), "--seconds", "1", "--out", str(output))
+        self.assertEqual(rejected.returncode, 2)
+        self.assertEqual(before, metadata.read_bytes())
+
+    def test_recorded_audio_output_includes_attribution(self):
+        catalog = json.loads((self.root / "library.json").read_text())
+        catalog[0].update(placeholder=False, source="Sound Effect By Test Author — https://example.com/audio", license="CC-BY-4.0")
+        (self.root / "library.json").write_text(json.dumps(catalog), encoding="utf-8")
+        result = self.call(str(self.recipe_path), "--seconds", "1", "--out", "credited.wav")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        credits = (self.root / "credited.credits.md").read_text()
+        self.assertIn("Test Author", credits)
+        self.assertIn("CC-BY-4.0", credits)

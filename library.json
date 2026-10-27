@@ -174,5 +174,86 @@
     "tonal": true,
     "musical_key": null,
     "bpm": null
+  },
+  {
+    "id": "water_drop_01",
+    "name": "水滴",
+    "description": "下载素材中截取的一次水滴短声，无持续雨声铺底。",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/recorded/water_drop_01.wav",
+    "tags": [
+      "水滴",
+      "短声",
+      "稀疏"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "CeoxBlackj — https://opengameart.org/content/water-drops",
+    "license": "CC0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "bird_chirp_01",
+    "name": "后院鸟叫",
+    "description": "作者后院录下的短鸟鸣，有自然音高，适合低音量、远处稀疏出现。",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/recorded/bird_chirp_01.wav",
+    "tags": [
+      "鸟叫",
+      "自然",
+      "户外"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "syncopika — https://lpc.opengameart.org/content/bird-chirping-sounds",
+    "license": "CC0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "book_page_01",
+    "name": "翻书页",
+    "description": "一次轻短的翻页摩擦声，已收柔高频，适合安静阅读时偶尔出现。",
+    "kind": "event",
+    "channels": "mono",
+    "file": "sounds/recorded/book_page_01.wav",
+    "tags": [
+      "翻书",
+      "纸张",
+      "阅读"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "Nicole Marie T — https://opengameart.org/content/page-turning-sfx-sound-effect",
+    "license": "CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
   }
 ]

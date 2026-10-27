@@ -1,0 +1,81 @@
+{
+  "retrieved_on": "2026-10-27",
+  "processing": "所列时间截取；均转单声道；polyphase 重采样到 48000 Hz；70 Hz 二阶高通；所列截止频率二阶低通；10 ms 首尾淡化；峰值校准为 0.2；32 位浮点 WAV。",
+  "sources": [
+    {
+      "id": "water_drop_01",
+      "name": "水滴",
+      "input": "water-drops.mp3",
+      "start": 14.72,
+      "end": 15.45,
+      "cutoff": 4500,
+      "author": "CeoxBlackj",
+      "source_url": "https://opengameart.org/content/water-drops",
+      "download_url": "https://opengameart.org/sites/default/files/water%20drops.mp3",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "description": "下载素材中截取的一次水滴短声，无持续雨声铺底。",
+      "tags": [
+        "水滴",
+        "短声",
+        "稀疏"
+      ],
+      "output": "sounds/recorded/water_drop_01.wav",
+      "source_sample_rate": 48000,
+      "source_channels": 2,
+      "output_seconds": 0.73,
+      "source_sha256": "db8a707befc26610ea2b176220e7c3387d54d6d2a7b9f7047438148f70f7ae60",
+      "output_sha256": "54cfd2406a2c66c868a2a3394f172cc7d46840baf66107e7eb2aa2c5f2d1b21a"
+    },
+    {
+      "id": "bird_chirp_01",
+      "name": "后院鸟叫",
+      "input": "bird-chirping.wav",
+      "start": 0.55,
+      "end": 2.9,
+      "cutoff": 5000,
+      "author": "syncopika",
+      "source_url": "https://lpc.opengameart.org/content/bird-chirping-sounds",
+      "download_url": "https://lpc.opengameart.org/sites/default/files/birdchirping071414.wav",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "description": "作者后院录下的短鸟鸣，有自然音高，适合低音量、远处稀疏出现。",
+      "tags": [
+        "鸟叫",
+        "自然",
+        "户外"
+      ],
+      "output": "sounds/recorded/bird_chirp_01.wav",
+      "source_sample_rate": 44000,
+      "source_channels": 2,
+      "output_seconds": 2.35,
+      "source_sha256": "bc6e28bd823b653b2abf3384d4147718603af6bcd98e26166345df71a61eeb08",
+      "output_sha256": "59c886a712b52b7f34023d52716d25edb4b428c37425c54d534b93887b2475af"
+    },
+    {
+      "id": "book_page_01",
+      "name": "翻书页",
+      "input": "page-turn.wav",
+      "start": 0.07,
+      "end": 0.98,
+      "cutoff": 3000,
+      "author": "Nicole Marie T",
+      "source_url": "https://opengameart.org/content/page-turning-sfx-sound-effect",
+      "download_url": "https://opengameart.org/sites/default/files/Page%20Turning%20Sfx.wav",
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "description": "一次轻短的翻页摩擦声，已收柔高频，适合安静阅读时偶尔出现。",
+      "tags": [
+        "翻书",
+        "纸张",
+        "阅读"
+      ],
+      "output": "sounds/recorded/book_page_01.wav",
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "output_seconds": 0.91,
+      "source_sha256": "63678a2a994d8854e9dcbefc12ad78f5fde862e210b3ac94930e67db4e10cd18",
+      "output_sha256": "2b00ad17252e76aceab0f50ab097fa01372aab64b737362dfcc7cbc39c32d985"
+    }
+  ]
+}
