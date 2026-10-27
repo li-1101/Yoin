@@ -97,7 +97,7 @@ class ModelTests(unittest.TestCase):
         ]) as provider:
             root = Path(directory)
             create_project(root)
-            environment = dict(os.environ, YOIN_PROJECT_DIR=str(root), YOIN_API_KEY="cli-test-secret",
+            environment = dict(os.environ, YOIN_PROVIDER="api", YOIN_PROJECT_DIR=str(root), YOIN_API_KEY="cli-test-secret",
                                YOIN_BASE_URL=provider.url, YOIN_MODEL="local-scripted-cli")
             process = subprocess.run([sys.executable, "-m", "yoin.run", "安静地写代码"], cwd=root,
                                      env=environment, capture_output=True, text=True, timeout=90)
@@ -117,7 +117,7 @@ class ModelTests(unittest.TestCase):
 
     def test_run_cli_without_config_fails_without_traceback(self):
         with tempfile.TemporaryDirectory() as directory:
-            env = dict(os.environ, YOIN_API_KEY="", YOIN_BASE_URL="", YOIN_MODEL="")
+            env = dict(os.environ, YOIN_PROVIDER="api", YOIN_API_KEY="", YOIN_BASE_URL="", YOIN_MODEL="")
             result = subprocess.run([sys.executable, "-m", "yoin.run", "安静"], cwd=directory,
                                     env=env, capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 2)

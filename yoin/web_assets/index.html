@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3eb">
+  <title>Yoin 余韵 · 你的声音角落</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23294035'/%3E%3Ccircle cx='20' cy='20' r='10' fill='none' stroke='%23ece8d8' stroke-width='2'/%3E%3Cpath d='M10 24h20' stroke='%23ece8d8' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Yoin 首页"><span class="brand-mark" aria-hidden="true"></span><span>Yoin <span class="brand-cn">余韵</span></span></a>
+      <span class="brand-line">Your Own Inner Nook</span>
+      <button class="connection" id="connection" type="button" title="刷新模型连接"><span class="connection-dot"></span><span id="connectionText">连接本机模型中</span><span aria-hidden="true">↻</span></button>
+    </header>
+
+    <main class="workspace">
+      <aside class="history-panel" aria-labelledby="historyHeading">
+        <div class="section-heading"><h2 id="historyHeading">声音足迹</h2><button id="refreshHistory" type="button" class="quiet-button" aria-label="刷新声音足迹">↻</button></div>
+        <p class="aside-caption">留住每一次，刚刚好的安静。</p>
+        <div id="historyList" class="history-list"></div>
+        <div class="aside-bottom"><span class="tiny-orbit" aria-hidden="true"></span><p>音频与听感<br>保存在这台电脑。</p></div>
+      </aside>
+
+      <section class="main-panel">
+        <section class="composer" aria-labelledby="pageHeading">
+          <div class="eyebrow">A LITTLE ROOM FOR YOURSELF</div>
+          <h1 id="pageHeading">给此刻，留一点余韵。</h1>
+          <p class="intro">描述你想待的地方，调一份属于自己的背景声音。</p>
+          <form id="generateForm">
+            <label class="sr-only" for="scene">你想听到的场景</label>
+            <div class="scene-box"><textarea id="scene" maxlength="2000" rows="3" required>午后安静阅读，偶尔有水滴，远处鸟叫，翻页轻一点，不要持续雨声。</textarea><div class="scene-bottom"><span>轻一点，慢一点，都可以说。</span><button id="generateButton" class="primary-button" type="submit">调配声音 <span aria-hidden="true">↗</span></button></div></div>
+          </form>
+          <div class="suggestions" aria-label="场景灵感"><span>从这里开始</span><button type="button" data-scene="午后安静阅读，偶尔有水滴，远处鸟叫，翻页轻一点，不要持续雨声。">安静阅读</button><button type="button" data-scene="深夜专注，只留稀疏的水滴和轻轻翻页，声音柔和，不要嘶声和混响。">深夜专注</button><button type="button" data-scene="多留一些空白，水滴和鸟鸣都少一些、远一些，不要持续的背景噪声。">更多留白</button></div>
+          <p id="connectionHint" class="connection-hint" hidden></p>
+        </section>
+
+        <div id="errorBox" class="error-box" role="alert" hidden></div>
+        <section id="progress" class="progress" aria-live="polite" hidden><span class="progress-orbit" aria-hidden="true"></span><div><strong id="progressText">正在准备声音</strong><p id="progressDetail">给声音一点时间。</p></div><span class="progress-round" id="progressRound"></span></section>
+
+        <section id="emptyState" class="empty-state"><div class="ripple" aria-hidden="true"><i></i><i></i><i></i><span>余</span></div><h2>把想象，慢慢变成声音。</h2><p>水滴、远处鸟鸣、轻轻翻页。<br>生成后，你可以对比两版，再用一句话微调。</p></section>
+
+        <section id="runPanel" class="run-panel" hidden aria-labelledby="runTitle">
+          <div class="run-heading"><div><div class="eyebrow">YOUR SOUND NOOK</div><h2 id="runTitle"></h2><p class="run-meta"><span id="runDate"></span><span id="runBadge" class="badge"></span><span id="runParent"></span></p></div><span class="finished-mark" aria-hidden="true">◌</span></div>
+          <div class="players">
+            <article class="player-card"><div class="player-heading"><h3>初稿</h3><span>最初的声音想法</span></div><audio id="draftAudio" controls preload="metadata" aria-label="播放初稿"></audio><p id="draftPlaceholder" class="player-placeholder">第一版试听生成后会出现在这里。</p><a id="draftDownload" class="download-link" hidden>下载 WAV <span aria-hidden="true">↓</span></a></article>
+            <article class="player-card final-card"><div class="player-heading"><h3>终稿</h3><span>听取分析后的版本</span></div><audio id="finalAudio" controls preload="metadata" aria-label="播放终稿"></audio><p id="finalPlaceholder" class="player-placeholder">还在调配，完成后就可以听了。</p><a id="finalDownload" class="download-link" hidden>下载 WAV <span aria-hidden="true">↓</span></a></article>
+          </div>
+          <p id="shortExplanation" class="short-explanation"></p>
+          <details class="explanation"><summary>调配说明与素材来源</summary><div id="fullExplanation" class="explanation-text"></div><a id="recipeDownload" class="download-link">下载配方 JSON ↓</a></details>
+
+          <section class="refine-section" aria-labelledby="refineHeading"><div><h3 id="refineHeading">再靠近一点，你想要的感觉。</h3><p>从这版继续，保留喜欢的部分。</p></div><form id="refineForm"><label class="sr-only" for="refinement">微调要求</label><input id="refinement" maxlength="2000" placeholder="比如：鸟叫再远一点，翻页少一些" required><button id="refineButton" type="submit" class="secondary-button">在这版上微调 <span aria-hidden="true">↗</span></button></form></section>
+
+          <section class="rating-section" aria-labelledby="ratingHeading"><div class="rating-title"><h3 id="ratingHeading">这一版，听起来怎么样？</h3><label class="version-choice">评价 <select id="ratingWhich" aria-label="选择评分版本"><option value="final">终稿</option><option value="draft">初稿</option></select></label></div><div class="stars" id="stars" role="group" aria-label="选择 1 到 5 分"><button type="button" data-score="1" aria-label="1 分" aria-pressed="false">★</button><button type="button" data-score="2" aria-label="2 分" aria-pressed="false">★</button><button type="button" data-score="3" aria-label="3 分" aria-pressed="false">★</button><button type="button" data-score="4" aria-label="4 分" aria-pressed="false">★</button><button type="button" data-score="5" aria-label="5 分" aria-pressed="false">★</button><span id="scoreLabel">还没有评分</span></div><form id="ratingForm"><label class="sr-only" for="ratingNote">试听备注</label><input id="ratingNote" maxlength="2000" placeholder="可选：哪里更舒服，哪里还抢注意？"><button id="ratingButton" class="quiet-button" type="submit">保存听感</button></form><p id="ratingStatus" class="rating-status" aria-live="polite"></p></section>
+        </section>
+        <footer class="footer">声音不用填满每一秒。留一点空白，也很好。</footer>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

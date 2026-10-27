@@ -4,7 +4,7 @@
 
 **Blocked by:** 03 — 中文场景经过自我调整得到最终音频。
 
-**Status:** ready-for-agent
+**Status:** in-progress
 
 - [ ] 继续调整携带旧配方，默认保留种子、层标识和无关参数。
 - [ ] 用户新要求优先于模板默认建议。

@@ -1,5 +1,7 @@
 """兼容 Chat Completions 的薄适配器，不引入 agent 框架。"""
 
+import os
+
 import openai
 
 from .config import ModelConfig
@@ -45,3 +47,18 @@ class ChatModel:
 
     def close(self) -> None:
         self._client.close()
+
+
+def create_model():
+    """完整 API 配置优先；未配置 API 时复用本机 Codex。可用 YOIN_PROVIDER 显式选择。"""
+    provider = os.environ.get("YOIN_PROVIDER", "auto").strip().lower()
+    if provider == "auto":
+        provider = "api" if any(os.environ.get(name) for name in ("YOIN_API_KEY", "YOIN_BASE_URL", "YOIN_MODEL")) else "codex"
+    if provider == "api":
+        config = ModelConfig.from_env()
+        return ChatModel(config), {"provider": "api", **config.public_info()}
+    if provider == "codex":
+        from .codex_model import CodexModel
+        model = CodexModel()
+        return model, model.public_info()
+    raise YoinError("YOIN_PROVIDER 只能是 auto、codex 或 api")

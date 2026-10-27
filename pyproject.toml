@@ -19,3 +19,6 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 include = ["yoin*"]
+
+[tool.setuptools.package-data]
+yoin = ["web_assets/*"]

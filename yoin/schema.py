@@ -104,6 +104,8 @@ def chinese_validation_error(exc: ValidationError, label: str) -> YoinError:
             message = "必须是整数"
         elif kind in {"string_type", "string_too_short"}:
             message = "必须是非空字符串"
+        elif kind == "string_too_long":
+            message = f"长度不能超过 {context['max_length']} 个字符"
         elif kind in {"list_type", "too_short"}:
             message = "必须是非空列表"
         elif kind in {"bool_type", "bool_parsing"}:

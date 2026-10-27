@@ -10,6 +10,7 @@ from .errors import YoinError
 from .library import load_library
 from .prompts import build_prompt
 from .rules import load_rules
+from .runs import RunStore
 from .tools import ToolSession, tool_definitions
 from .trace import RunTrace
 
@@ -51,19 +52,30 @@ def run_agent(
     *,
     model_info: dict | None = None,
     final_seconds: int = 120,
+    from_run: str | None = None,
+    on_started: Callable[[Path], None] | None = None,
 ) -> dict:
     if not isinstance(user_request, str) or not user_request.strip():
         raise YoinError("场景描述不能为空")
     root = Path(root).resolve()
     trace = RunTrace.create(root)
-    trace.record("start", user_request=user_request, model=model_info or {})
+    trace.record("start", user_request=user_request, model=model_info or {}, parent_run_id=from_run)
     try:
+        if on_started is not None:
+            on_started(trace.directory)
         library = load_library(root / "library.json")
         rules = load_rules(root / "mixing_rules.json")
         context = build_prompt(root, library, rules)
         definitions = tool_definitions()
+        previous = RunStore(root).recipe(from_run, library.sounds) if from_run is not None else None
+        user_content = user_request
+        if previous is not None:
+            user_content = ("当前配方是：" + previous.model_dump_json(exclude_none=True)
+                            + "\n用户希望：" + user_request
+                            + "\n请默认最小修改，保留 seed、layer_id 和与本次要求无关的参数。")
         trace.save_json("inputs.json", {
             "user_request": user_request, "system_prompt": context.system_prompt,
+            "parent_run_id": from_run, "base_recipe": previous.model_dump(exclude_none=True) if previous is not None else None,
             "guidance": context.guidance, "templates": context.templates,
             "library": [sound.model_dump(exclude_none=True) for sound in library.sounds.values()],
             "sound_files": library.freeze_sources(), "rules": rules.model_dump(), "tools": definitions,
@@ -72,7 +84,7 @@ def run_agent(
         })
         session = ToolSession(library, rules, trace, final_seconds)
         messages = [{"role": "system", "content": context.system_prompt},
-                    {"role": "user", "content": user_request}]
+                    {"role": "user", "content": user_content}]
         reason = f"达到 {MAX_STEPS} 轮上限，未主动提交"
         for step in range(1, MAX_STEPS + 1):
             trace.record("llm_request", step=step, messages=messages, tools=definitions)

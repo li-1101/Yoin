@@ -2,8 +2,25 @@
 
 **Your Own Inner Nook**
 
-将场景描述变成背景声音的实验。当前完成到 **阶段 3：分析器、两个工具的 agent 循环及完整过程记录**。
-继续调整（`--from`）和评分命令属于阶段 4，尚未实现。
+将场景描述变成背景声音的实验。已接通本机登录的 Codex，并提供本地网页：描述场景、生成、对比初稿和终稿、文字微调、保存试听评分。
+
+## 本地网页
+
+在本机 Codex 已通过 ChatGPT 登录的情况下，启动网页不需要另配 API Key：
+
+```bash
+source .venv/bin/activate
+YOIN_PROVIDER=codex python -m yoin.web
+```
+
+打开 <http://127.0.0.1:8787>。服务只监听本机；可用 `--port 8788` 更换端口，在启动服务的终端按 Ctrl-C 停止。
+页面支持后台生成进度、声音足迹、两版播放和 WAV 下载、从已有版本微调，以及 1–5 分和试听备注。
+初稿与终稿均为 120 秒，默认不自动播放。中断但已保存初稿的运行，也可以从初稿继续。
+
+使用官方 [`codex exec`](https://learn.chatgpt.com/docs/non-interactive-mode) 复用现有登录与套餐额度；
+模型通过 Codex 服务推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
+登录方式见 [Codex authentication](https://learn.chatgpt.com/docs/auth)。
+当前实现优先使用已经验通的 Codex 入口。
 
 ## 安装和试听
 
@@ -47,13 +64,22 @@ python -m yoin.make_placeholders --force
 
 ## 场景到最终音频
 
-配置支持 Chat Completions function calling 的服务，以下值需要替换为自己的服务配置：
+同样可以直接通过命令行生成：
+
+```bash
+YOIN_PROVIDER=codex python -m yoin.run "午后安静阅读，偶尔有水滴，远处鸟叫，翻页轻一点，不要持续雨声"
+```
+
+`YOIN_PROVIDER` 支持 `codex`、`api`、`auto`（默认）。`auto` 在没有 `YOIN_API_KEY`／`YOIN_BASE_URL`／`YOIN_MODEL` 时使用本机 Codex；
+出现任一 API 配置项时改用 API，并要求三项完整。Codex 可用 `YOIN_CODEX_MODEL` 指定模型，不填则沿用 CLI 默认模型。
+
+如需支持 Chat Completions function calling 的服务，配置 API 入口：
 
 ```bash
 export YOIN_API_KEY="你的服务密钥"
 export YOIN_BASE_URL="https://api.example.com/v1"
 export YOIN_MODEL="支持工具调用的模型名"
-python -m yoin.run "深夜写代码，窗外下着小雨，远处有一点音乐"
+YOIN_PROVIDER=api python -m yoin.run "深夜写代码，窗外下着小雨，远处有一点音乐"
 ```
 
 程序依次调用 `render_and_analyze` 和 `submit_recipe`，最多八轮模型请求、四次试听。
@@ -62,14 +88,28 @@ python -m yoin.run "深夜写代码，窗外下着小雨，远处有一点音乐
 
 如果八轮后未提交，使用最后一份成功试听的配方，明确记录 `fallback` 和“未主动提交”。
 服务请求失败但已有有效试听时，也保存兜底结果。从未产生有效配方时返回中文错误并保留失败记录。
-每次请求超时为 60 秒，不自动重试，避免隐藏的请求超出八轮上限。
-按 Ctrl-C 中断时保留已完成的过程与试听，记录失败状态。
+API 每次请求超时为 60 秒；Codex 默认 180 秒，可用 `YOIN_CODEX_TIMEOUT` 设置为 1–600 秒。
+不自动重试模型请求。按 Ctrl-C 中断 CLI 时保留已完成的过程与试听；停止网页服务会关闭其持有的模型连接。
 
 使用本地模型服务且机器配置了 HTTP 代理时，请为回环地址设置 `NO_PROXY`。
 程序沿用系统代理设置；测试服务只在测试期间绕过回环地址代理并在退出时恢复。
 
 工具调用消息及 `tool_call_id` 的往返遵循 [OpenAI function calling 文档](https://developers.openai.com/api/docs/guides/function-calling)。
-服务和模型均由上述环境变量指定，没有固定的模型选择。
+API 服务和模型由上述环境变量指定。
+
+## 从已有版本微调与评分
+
+将运行编号替换为 `runs/` 下实际的目录名：
+
+```bash
+python -m yoin.run "鸟叫再远一点，翻页少一些" --from 运行编号
+python -m yoin.rate 运行编号 --which final --score 4 --note "更柔和，翻页还可以少一点"
+```
+
+微调把旧配方带回模型，默认要求保留 seed、layer_id 和无关参数；用户新要求优先于模板。
+每次微调另建运行目录，`inputs.json` 记录 `parent_run_id` 和 `base_recipe`，原版产物保留。
+评分的 `which` 为 `draft` 或 `final`，分数是 1–5 的整数，备注可选且最多 2000 字。
+`runs/ratings.jsonl` 逐条追加运行编号、版本、评分、备注、配方 SHA256、渲染器版本和当轮参考模板内容哈希。
 
 ## 测量与可编辑规则
 
@@ -161,7 +201,7 @@ CLI 负责读取规则中的目标响度和写出 WAV，后续 agent 可以复�
 测试使用标准库 unittest，没有新增测试依赖：
 
 ```bash
-python -m unittest tests.test_schema tests.test_renderer tests.test_placeholders tests.test_cli tests.test_analysis tests.test_agent tests.test_model tests.test_recordings -v
+python -m unittest tests.test_agent tests.test_model tests.test_codex_model tests.test_runs tests.test_web -v
 ```
 
 覆盖声像、归一化前的距离衰减、循环接缝、实际事件次数、独立随机流、确定性、
@@ -175,7 +215,7 @@ python -m tests.demo_agent
 ```
 
 演示经过真实 SDK 和本地 HTTP 服务，但服务返回预设响应，不能当作真实模型能力或听感质量的验收。
-真实服务需要配置 `YOIN_*` 后运行上述场景命令。
+真实服务可使用本机 Codex 登录，或配置 API 后运行上述场景命令。
 
 后续任务见 [本地 tickets](.scratch/yoin-v0/issues/)：
-阶段 1–3 已实现；阶段 4 为继续调整和评分。
+阶段 1–4、本机 Codex 入口和本地试听页已实现。验收记录见 [阶段 4 与网页验证](docs/stage-4-web-validation.md)。

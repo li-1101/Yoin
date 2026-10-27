@@ -55,3 +55,6 @@ class ScriptedModel:
         if isinstance(response, BaseException):
             raise response
         return response
+
+    def close(self):
+        pass
