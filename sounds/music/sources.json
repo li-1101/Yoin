@@ -1,0 +1,47 @@
+{
+  "retrieved_on": "2026-10-27",
+  "processing": "保留整曲与立体声；FFmpeg重采样至48000Hz；20ms首尾淡化；峰值校准为0.25；24位PCM FLAC。声音库另设gain_db=-6作为相对混音校准。未额外添加滤波、混响或压缩。",
+  "sources": [
+    {
+      "id": "bach_prelude_c_major_01",
+      "name": "巴赫：C大调前奏曲 BWV 846",
+      "input": "bach-prelude-c-major.ogg",
+      "author": "Kimiko Ishizaka",
+      "composer": "Johann Sebastian Bach",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Kimiko_Ishizaka_-_Bach_-_Well-Tempered_Clavier,_Book_1_-_01_Prelude_No._1_in_C_major,_BWV_846.ogg",
+      "artist_url": "https://kimikoishizaka.bandcamp.com/album/bach-well-tempered-clavier-book-1",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Kimiko_Ishizaka_-_Bach_-_Well-Tempered_Clavier%2C_Book_1_-_01_Prelude_No._1_in_C_major%2C_BWV_846.ogg",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sample_rate": 96000,
+      "source_channels": 2,
+      "source_codec": "vorbis",
+      "output": "sounds/music/bach_prelude_c_major_01.flac",
+      "output_seconds": 162.92,
+      "source_sha256": "abce13d492fbc909db3a00b27c66774220441bb31903f93cf2aef2d4084d93d2",
+      "output_sha256": "da4b1d25ad951e52e11f77d1ab839dfbc1b93660ac526ffa7dac87b95c5e51fd",
+      "source_peak": 0.18123672902584076,
+      "applied_gain": 1.3794113441782265
+    },
+    {
+      "id": "satie_gymnopedie_1_01",
+      "name": "萨蒂：第一号吉姆诺佩蒂",
+      "input": "satie-gymnopedie-1.ogg",
+      "author": "Teknopazzo",
+      "composer": "Erik Satie",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Gymnopedie_No._1..ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Gymnopedie_No._1..ogg",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sample_rate": 22050,
+      "source_channels": 2,
+      "source_codec": "flac",
+      "output": "sounds/music/satie_gymnopedie_1_01.flac",
+      "output_seconds": 204.7995625,
+      "source_sha256": "13e4e03797169392166b9f11d9bf9c421c022b48ad87d9b10bd441ce068502da",
+      "output_sha256": "61ffa8d4e4636040f1a9ee409ad7914e7e79f101f8201301005e1b35b1f65169",
+      "source_peak": 0.9465247392654419,
+      "applied_gain": 0.2641241054026908
+    }
+  ]
+}

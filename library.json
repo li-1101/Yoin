@@ -255,5 +255,63 @@
     "tonal": false,
     "musical_key": null,
     "bpm": null
+  },
+  {
+    "id": "bach_prelude_c_major_01",
+    "name": "巴赫：C大调前奏曲 BWV 846",
+    "description": "巴赫C大调前奏曲的完整钢琴录音，Kimiko Ishizaka演奏。均匀分解和弦，适合作为轻音乐背景；混音时按现有循环规则截用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/music/bach_prelude_c_major_01.flac",
+    "tags": [
+      "古典音乐",
+      "钢琴",
+      "巴赫",
+      "前奏曲"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "轻音乐",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "Johann Sebastian Bach；音源：Kimiko Ishizaka — https://commons.wikimedia.org/wiki/File:Kimiko_Ishizaka_-_Bach_-_Well-Tempered_Clavier,_Book_1_-_01_Prelude_No._1_in_C_major,_BWV_846.ogg",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": -6.0,
+    "tonal": true,
+    "musical_key": "C major",
+    "bpm": null
+  },
+  {
+    "id": "satie_gymnopedie_1_01",
+    "name": "萨蒂：第一号吉姆诺佩蒂",
+    "description": "萨蒂Gymnopedie No.1完整音源，Teknopazzo发布的CC0版本。慢速三拍钢琴曲，适合作为轻音乐背景；混音时按现有循环规则截用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/music/satie_gymnopedie_1_01.flac",
+    "tags": [
+      "古典音乐",
+      "钢琴",
+      "萨蒂",
+      "慢速"
+    ],
+    "mood": [
+      "平静"
+    ],
+    "good_for": [
+      "阅读",
+      "轻音乐",
+      "专注"
+    ],
+    "placeholder": false,
+    "source": "Erik Satie；音源：Teknopazzo — https://commons.wikimedia.org/wiki/File:Gymnopedie_No._1..ogg",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": -6.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
   }
 ]

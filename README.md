@@ -42,6 +42,8 @@ python -m yoin.render templates/quiet_reading.recipe.json --seconds 60 --out run
 
 此模板只用水滴、鸟叫和翻书，去掉持续噪声和混响。当前规则目标响度为 -30 LUFS。
 素材作者、许可和处理记录见 [声音来源](docs/audio-sources.md)。
+另有两首 CC0 古典音乐保存在 `sounds/music/` 并已登记进声音库：巴赫《C 大调前奏曲 BWV 846》、
+萨蒂《第一号吉姆诺佩蒂》。可在场景里直接说曲名，下一次生成即会加载。
 
 生成七种占位声音不需要密钥或外部素材。占位声音是噪声、正弦和短脉冲，主要用于验证控制和流程。
 `pad_soft_01` 是合成和弦，不能当作真实爵士乐。输出为 48000 Hz、双声道、32 位浮点 WAV。
