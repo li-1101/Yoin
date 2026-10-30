@@ -40,6 +40,8 @@ def _assistant_message(response: dict) -> dict:
         # 部分兼容推理服务要求原样回传该字段；原始响应仍完整保存在 trace。
         if "reasoning_content" in message:
             assistant["reasoning_content"] = message["reasoning_content"]
+        if "claude_content" in message:
+            assistant["claude_content"] = message["claude_content"]
         return assistant
     except (KeyError, IndexError, TypeError, AttributeError, ValueError) as exc:
         raise YoinError("模型返回的消息或工具调用结构无效，请检查服务兼容性") from exc

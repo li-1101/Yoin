@@ -67,7 +67,9 @@ function renderRun(run) {
   $('runPanel').hidden = false;
   $('runTitle').textContent = run.title;
   $('runDate').textContent = formatDate(run.created_at);
-  $('runBadge').textContent = run.scripted ? '脚本演示' : run.provider === 'codex' ? 'Codex 调配' : '模型调配';
+  const providerNames = { codex: 'Codex', claude: 'Claude', openai: 'GPT', deepseek: 'DeepSeek' };
+  $('runBadge').textContent = run.scripted ? '脚本演示' : (providerNames[run.provider] || '模型') + ' 调配';
+  $('runBadge').title = run.model;
   $('runParent').textContent = run.parent_run_id ? '在上一版上微调' : '';
   setAudio('draft', run); setAudio('final', run);
   $('shortExplanation').textContent = (run.explanation || '').split('保留的分析建议')[0].split('素材来源与许可')[0].trim();
@@ -172,4 +174,92 @@ $('ratingForm').addEventListener('submit', async (event) => {
 });
 $('refreshHistory').addEventListener('click', () => history().catch((failure) => error(failure.message)));
 $('connection').addEventListener('click', () => connection().catch((failure) => error(failure.message)));
+
+let savedConnections = null;
+let settingsBusy = false;
+function showConnectionFields() {
+  const provider = $('modelProvider').value;
+  const profile = savedConnections?.profiles.find((item) => item.provider === provider);
+  const isApi = Boolean(profile);
+  $('apiConnectionFields').hidden = !isApi;
+  $('localConnectionHint').hidden = isApi;
+  for (const id of ['modelName', 'modelBaseUrl', 'modelApiKey']) $(id).disabled = !isApi;
+  $('modelApiKey').value = '';
+  $('modelApiKey').required = isApi && !profile.configured;
+  $('saveConnection').hidden = !isApi;
+  $('deleteConnection').hidden = !profile?.configured;
+  $('connectionTestHint').hidden = provider === 'codex';
+  if (profile) {
+    $('modelName').value = profile.model;
+    $('modelBaseUrl').value = profile.base_url;
+    $('modelKeyState').textContent = profile.configured ? '已保存 · 留空沿用' : '尚未绑定';
+    $('modelProviderHint').textContent = provider === 'claude' ? 'CC 使用 Claude / Anthropic API Key。' : `填写 ${profile.label} 的 API Key。`;
+  } else {
+    $('localConnectionHint').textContent = provider === 'codex' ? '使用本机 Codex 已保存的 ChatGPT 登录，不需要在这里填写密钥。' : '沿用启动时的 YOIN_PROVIDER 等环境配置；没有 API 配置时使用本机 Codex。';
+  }
+  $('activeConnection').textContent = `当前使用：${savedConnections?.active_label || '原有环境配置'}`;
+}
+function settingsStatus(message, failed = false) {
+  $('modelSettingsStatus').textContent = message;
+  $('modelSettingsStatus').classList.toggle('failed', failed);
+}
+async function updateSettings(action) {
+  if (settingsBusy) return;
+  settingsBusy = true;
+  for (const id of ['modelProvider', 'saveConnection', 'testConnection', 'useConnection', 'deleteConnection', 'closeModelSettings']) $(id).disabled = true;
+  settingsStatus('正在处理…');
+  try { await action(); }
+  catch (failure) { settingsStatus(failure.message, true); }
+  finally {
+    settingsBusy = false;
+    for (const id of ['modelProvider', 'saveConnection', 'testConnection', 'useConnection', 'deleteConnection', 'closeModelSettings']) $(id).disabled = false;
+  }
+}
+async function saveSelectedConnection() {
+  const provider = $('modelProvider').value;
+  if (!savedConnections.profiles.some((profile) => profile.provider === provider)) return;
+  const data = { provider, model: $('modelName').value.trim(), base_url: $('modelBaseUrl').value.trim() };
+  const key = $('modelApiKey').value.trim();
+  if (key) data.api_key = key;
+  savedConnections = await api('/api/connections/save', data);
+  showConnectionFields();
+}
+$('modelSettingsButton').addEventListener('click', async () => {
+  try {
+    savedConnections = await api('/api/connections');
+    $('modelProvider').value = savedConnections.active === 'environment' ? 'claude' : savedConnections.active;
+    showConnectionFields(); settingsStatus(''); $('modelSettings').showModal();
+  } catch (failure) { error(failure.message); }
+});
+$('closeModelSettings').addEventListener('click', () => { $('modelApiKey').value = ''; $('modelSettings').close(); });
+$('modelSettings').addEventListener('cancel', (event) => { if (settingsBusy) event.preventDefault(); });
+$('modelSettings').addEventListener('close', () => { $('modelApiKey').value = ''; });
+$('modelBaseUrl').addEventListener('invalid', () => { $('modelBaseUrl').closest('details').open = true; });
+$('modelProvider').addEventListener('change', () => { showConnectionFields(); settingsStatus(''); });
+$('modelSettingsForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (!$('modelSettingsForm').reportValidity()) return;
+  updateSettings(async () => { await saveSelectedConnection(); await connection(); settingsStatus('配置已保存。点击「使用此入口」切换。'); });
+});
+$('testConnection').addEventListener('click', () => {
+  if (!$('modelSettingsForm').reportValidity()) return;
+  updateSettings(async () => {
+    await saveSelectedConnection(); settingsStatus('正在检查连接与工具调用，请稍等…');
+    const result = await api('/api/connections/test', { provider: $('modelProvider').value });
+    settingsStatus(result.message);
+  });
+});
+$('useConnection').addEventListener('click', () => {
+  if (!$('modelSettingsForm').reportValidity()) return;
+  updateSettings(async () => {
+    await saveSelectedConnection();
+    savedConnections = await api('/api/connections/select', { provider: $('modelProvider').value });
+    showConnectionFields(); await connection();
+    settingsStatus(`已切换为 ${savedConnections.active_label}，下次生成或微调使用这个入口。`);
+  });
+});
+$('deleteConnection').addEventListener('click', () => updateSettings(async () => {
+  savedConnections = await api('/api/connections/delete', { provider: $('modelProvider').value });
+  showConnectionFields(); await connection(); settingsStatus('这家的密钥和配置已删除。');
+}));
 (async () => { try { await connection(); await history(true); } catch (failure) { error('本地服务暂时无法连接，请刷新页面重试。'); } })();

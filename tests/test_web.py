@@ -8,11 +8,14 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from yoin.agent import run_agent
+from yoin.connections import ConnectionChoice
 from yoin.web import make_server
 
 from .agent_helpers import ScriptedModel, completion, create_project, preview, submit
+from .fake_provider import LocalProvider
 
 
 class WebTests(unittest.TestCase):
@@ -175,6 +178,78 @@ class WebTests(unittest.TestCase):
                                 env={**os.environ, "YOIN_WEB_PORT": "bad"})
         self.assertEqual(result.returncode, 2)
         self.assertIn("端口必须是整数", result.stderr)
+
+    def test_model_configuration_routes_never_return_saved_keys(self):
+        _, _, settings = self.json_request("GET", "/api/connections")
+        self.assertEqual(settings["active"], "environment")
+        self.assertEqual(len(settings["profiles"]), 3)
+        for provider in ["claude", "openai", "deepseek"]:
+            status, _, settings = self.json_request("POST", "/api/connections/save", {
+                "provider": provider, "api_key": "test-web-private-" + provider})
+            self.assertEqual(status, 200)
+            self.assertNotIn("test-web-private", json.dumps(settings))
+        status, _, settings = self.json_request("POST", "/api/connections/select", {"provider": "openai"})
+        self.assertEqual(status, 200)
+        self.assertEqual(settings["active"], "openai")
+        _, _, settings = self.json_request("POST", "/api/connections/save", {"provider": "openai", "model": "changed"})
+        self.assertTrue(next(profile for profile in settings["profiles"] if profile["provider"] == "openai")["configured"])
+        _, _, settings = self.json_request("POST", "/api/connections/delete", {"provider": "openai"})
+        self.assertEqual(settings["active"], "environment")
+        _, _, public = self.json_request("GET", "/api/connections")
+        self.assertNotIn("test-web-private", json.dumps(public))
+        self.assertEqual(self.request("GET", "/.yoin/connections.json")[0], 404)
+        for endpoint in ["save", "select", "delete", "test"]:
+            status, _, _ = self.json_request("POST", "/api/connections/" + endpoint,
+                                             {"provider": "openai"}, headers={"X-Yoin-Token": ""})
+            self.assertEqual(status, 403)
+
+    def test_selected_api_is_used_by_generation_and_logged_without_its_key(self):
+        self.server.app.model_factory = None
+        with LocalProvider([completion(preview()), completion(submit())]) as provider:
+            self.json_request("POST", "/api/connections/save", {
+                "provider": "deepseek", "api_key": "test-generation-private-key", "base_url": provider.url,
+                "model": "scripted-selected-model"})
+            self.json_request("POST", "/api/connections/select", {"provider": "deepseek"})
+            _, _, started = self.json_request("POST", "/api/jobs", {"request": "阅读"})
+            job = self.wait_job(started["job_id"])
+            self.assertEqual(job["status"], "completed", job)
+            self.assertEqual(job["run"]["provider"], "deepseek")
+            self.assertEqual(job["run"]["model"], "scripted-selected-model")
+            self.assertEqual(len(provider.requests), 2)
+            self.assertEqual(provider.requests[0]["thinking"], {"type": "disabled"})
+            for path in (self.root / "runs" / job["run_id"]).iterdir():
+                if path.suffix in {".json", ".jsonl", ".md"}:
+                    self.assertNotIn("test-generation-private-key", path.read_text())
+
+    def test_switching_and_replacing_credentials_during_a_job_only_affects_the_next_job(self):
+        self.server.app.model_factory = None
+        store = self.server.app.connections
+        store.save({"provider": "openai", "api_key": "original-key", "model": "original-model"})
+        store.select({"provider": "openai"})
+        entered, release = threading.Event(), threading.Event()
+        choices = []
+
+        def build(choice):
+            choices.append(choice)
+            entered.set()
+            release.wait(10)
+            return ScriptedModel([completion(preview()), completion(submit())]), {
+                "provider": choice.provider, "model": choice.config.model}
+
+        with patch.object(ConnectionChoice, "create_model", build):
+            try:
+                _, _, started = self.json_request("POST", "/api/jobs", {"request": "阅读"})
+                self.assertTrue(entered.wait(5))
+                store.save({"provider": "openai", "api_key": "replacement-key", "model": "replacement-model"})
+                store.select({"provider": "codex"})
+            finally:
+                release.set()
+            job = self.wait_job(started["job_id"])
+        self.assertEqual(job["status"], "completed", job)
+        self.assertEqual(job["run"]["model"], "original-model")
+        self.assertEqual(choices[0].provider, "openai")
+        self.assertEqual(choices[0].config.api_key, "original-key")
+        self.assertEqual(store.choice().provider, "codex")
 
 
 if __name__ == "__main__":

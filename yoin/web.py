@@ -18,8 +18,8 @@ from pydantic import Field, ValidationError
 from .agent import run_agent
 from .cli import ChineseArgumentParser, run_cli
 from .config import project_root
+from .connections import ConnectionStore
 from .errors import YoinError
-from .model import create_model
 from .runs import RunStore
 from .schema import DataModel, chinese_validation_error
 from .trace import RunTrace
@@ -33,9 +33,10 @@ class JobRequest(DataModel):
 
 
 class AppState:
-    def __init__(self, root: Path, model_factory=create_model):
+    def __init__(self, root: Path, model_factory=None):
         self.root = root
         self.store = RunStore(root)
+        self.connections = ConnectionStore(root)
         self.model_factory = model_factory
         self.token = secrets.token_urlsafe(32)
         self.jobs = {}
@@ -47,9 +48,11 @@ class AppState:
 
     def connection(self) -> dict:
         try:
-            model, info = self.model_factory()
+            factory = self.model_factory or self.connections.choice().create_model
+            model, info = factory()
             model.close()
-            label = "本机 Codex · 已登录" if info.get("provider") == "codex" else "模型 API · 已配置"
+            label = ("本机 Codex · 已登录" if info.get("provider") == "codex"
+                     else info.get("label", "模型 API") + " · 已配置")
             return {"ready": True, "label": label, "provider": info.get("provider", "api")}
         except YoinError as exc:
             return {"ready": False, "label": "模型尚未连接", "error": str(exc)}
@@ -70,18 +73,20 @@ class AppState:
                 raise YoinError("本地服务正在停止")
             if self.active_job is not None:
                 raise YoinError("已有一个声音正在调配，请等它完成后再试")
+            # 固定任务开始时的配置；在网页切换或替换密钥只影响下一次任务。
+            factory = self.model_factory or self.connections.choice().create_model
             job_id = uuid.uuid4().hex
             job = {"job_id": job_id, "status": "running", "run_id": None, "error": ""}
             self.jobs[job_id] = job
             self.active_job = job_id
-            self._worker = threading.Thread(target=self._generate, args=(job_id, request), daemon=True, name="yoin-generate")
+            self._worker = threading.Thread(target=self._generate, args=(job_id, request, factory), daemon=True, name="yoin-generate")
             self._worker.start()
         return dict(job)
 
-    def _generate(self, job_id: str, request: JobRequest):
+    def _generate(self, job_id: str, request: JobRequest, factory):
         model = None
         try:
-            model, info = self.model_factory()
+            model, info = factory()
             with self.lock:
                 self._model = model
                 if self._closed:
@@ -140,7 +145,7 @@ class AppState:
         return result
 
 
-def make_server(root: Path | str, port: int = 8787, *, model_factory=create_model):
+def make_server(root: Path | str, port: int = 8787, *, model_factory=None):
     app = AppState(Path(root).resolve(), model_factory)
 
     class Handler(BaseHTTPRequestHandler):
@@ -237,6 +242,8 @@ def make_server(root: Path | str, port: int = 8787, *, model_factory=create_mode
                                      "active_job": app.active_job})
                 elif path == "/api/runs":
                     self._json(200, {"runs": app.store.list()})
+                elif path == "/api/connections":
+                    self._json(200, app.connections.public())
                 elif path.startswith("/api/runs/"):
                     self._json(200, app.store.get(path.removeprefix("/api/runs/")))
                 elif path.startswith("/api/jobs/"):
@@ -280,6 +287,14 @@ def make_server(root: Path | str, port: int = 8787, *, model_factory=create_mode
                 elif self.path == "/api/ratings":
                     run_id = data.pop("run_id", None)
                     self._json(201, app.store.rate(run_id, data))
+                elif self.path == "/api/connections/save":
+                    self._json(200, app.connections.save(data))
+                elif self.path == "/api/connections/select":
+                    self._json(200, app.connections.select(data))
+                elif self.path == "/api/connections/delete":
+                    self._json(200, app.connections.delete(data))
+                elif self.path == "/api/connections/test":
+                    self._json(200, app.connections.test(data))
                 else:
                     self._json(404, {"error": "找不到该操作"})
             except (BrokenPipeError, ConnectionResetError):

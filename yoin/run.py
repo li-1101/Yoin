@@ -3,7 +3,7 @@
 from .agent import run_agent
 from .cli import ChineseArgumentParser, run_cli
 from .config import project_root
-from .model import create_model
+from .connections import ConnectionStore
 
 
 def main() -> int:
@@ -13,7 +13,7 @@ def main() -> int:
     args = parser.parse_args()
 
     def action():
-        model, model_info = create_model()
+        model, model_info = ConnectionStore(project_root()).choice().create_model()
         try:
             final = run_agent(args.request, project_root(), model.complete, model_info=model_info, from_run=args.from_run)
         finally:

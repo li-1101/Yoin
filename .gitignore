@@ -4,6 +4,7 @@ __pycache__/
 *.egg-info/
 .DS_Store
 .env
+.yoin/
 runs/
 sounds/*.wav
 dist/

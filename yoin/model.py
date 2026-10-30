@@ -9,8 +9,9 @@ from .errors import YoinError
 
 
 class ChatModel:
-    def __init__(self, config: ModelConfig):
+    def __init__(self, config: ModelConfig, *, extra_body: dict | None = None):
         self._model = config.model
+        self._extra_body = extra_body
         try:
             self._client = openai.OpenAI(
                 api_key=config.api_key, base_url=config.base_url, timeout=60.0, max_retries=0,
@@ -22,22 +23,23 @@ class ChatModel:
         try:
             response = self._client.chat.completions.create(
                 model=self._model, messages=messages, tools=tools, tool_choice="auto",
+                **({"extra_body": self._extra_body} if self._extra_body else {}),
             )
             if not hasattr(response, "model_dump"):
                 raise YoinError("模型服务没有返回兼容的 Chat Completions 响应")
             return response.model_dump(mode="json", exclude_none=True)
         except openai.AuthenticationError as exc:
-            raise YoinError("模型认证失败，请检查 YOIN_API_KEY") from exc
+            raise YoinError("模型认证失败，请检查 API Key") from exc
         except openai.PermissionDeniedError as exc:
             raise YoinError("模型服务拒绝访问，请检查账户权限") from exc
         except openai.NotFoundError as exc:
-            raise YoinError("找不到模型或接口，请检查 YOIN_MODEL 和 YOIN_BASE_URL") from exc
+            raise YoinError("找不到模型或接口，请检查模型名称和服务地址") from exc
         except openai.RateLimitError as exc:
             raise YoinError("模型服务限流或额度不足，请稍后重试") from exc
         except openai.APITimeoutError as exc:
             raise YoinError("模型请求超时，请检查服务状态") from exc
         except openai.APIConnectionError as exc:
-            raise YoinError("无法连接模型服务，请检查 YOIN_BASE_URL 和网络") from exc
+            raise YoinError("无法连接模型服务，请检查服务地址和网络") from exc
         except openai.BadRequestError as exc:
             raise YoinError("模型服务不接受当前请求，请检查模型是否支持工具调用") from exc
         except openai.APIStatusError as exc:

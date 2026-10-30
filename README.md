@@ -17,6 +17,27 @@ YOIN_PROVIDER=codex python -m yoin.web
 页面支持后台生成进度、声音足迹、两版播放和 WAV 下载、从已有版本微调，以及 1–5 分和试听备注。
 初稿与终稿均为 120 秒，默认不自动播放。中断但已保存初稿的运行，也可以从初稿继续。
 
+右上角「模型设置」支持分别绑定 **Claude（CC）、GPT、DeepSeek**：选择入口，粘贴该服务的 API Key，
+填写模型名称后保存，再点击「使用此入口」。模型和服务地址已提供默认值，可自行修改。
+三家的密钥互不覆盖，已保存的密钥不回填到页面；留空保存会沿用旧密钥，删除按钮可以移除整家配置。
+「测试连接」会发送一条简短的工具调用请求，使用所选 API 的额度；保存和切换不会发送生成请求。
+页面显示「已配置」只代表本地配置就绪，连接测试结果会另行显示。
+
+CC 在这里指 Claude / Anthropic API 接入，不使用 Claude Code 的登录或订阅凭据。
+「本机 Codex」继续复用已有 ChatGPT 登录；「原有环境配置」沿用下面的 `YOIN_PROVIDER` 等变量。
+未保存任何选择时，默认仍使用原有环境配置。
+选定入口同时用于网页生成、微调和 CLI；切换或替换密钥只影响下一次任务。
+
+密钥以明文保存在本机 `.yoin/connections.json`，目录权限为 0700，文件权限为 0600。
+该目录不进入 Git；读取接口、运行快照和普通错误消息均不返回密钥，浏览器不持久保存密钥。
+这仍是本机单人入口，聊天、个人记忆和公网分享尚未接入。
+
+Claude 使用原生 [Messages 与工具调用](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)；
+GPT 沿用现有 [Chat Completions](https://developers.openai.com/api/reference/chat-completions/overview)，
+DeepSeek 使用其 [兼容接口](https://api-docs.deepseek.com/en/)和
+[非思考工具调用方式](https://api-docs.deepseek.com/guides/tool_calls/)。
+默认模型为 `claude-sonnet-5-5`、`gpt-5-mini`、`deepseek-flash`，可按密钥实际可用的模型修改。
+
 使用官方 [`codex exec`](https://learn.chatgpt.com/docs/non-interactive-mode) 复用现有登录与套餐额度；
 模型通过 Codex 服务推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
 登录方式见 [Codex authentication](https://learn.chatgpt.com/docs/auth)。
@@ -208,7 +229,7 @@ CLI 负责读取规则中的目标响度和写出 WAV，后续 agent 可以复�
 测试使用标准库 unittest，没有新增测试依赖：
 
 ```bash
-python -m unittest tests.test_agent tests.test_model tests.test_codex_model tests.test_runs tests.test_web -v
+python -m unittest tests.test_agent tests.test_model tests.test_codex_model tests.test_connections tests.test_claude_model tests.test_runs tests.test_web -v
 ```
 
 覆盖声像、归一化前的距离衰减、循环接缝、实际事件次数、独立随机流、确定性、

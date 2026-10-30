@@ -8,8 +8,9 @@ from unittest.mock import patch
 
 
 class LocalProvider:
-    def __init__(self, responses):
+    def __init__(self, responses, *, endpoint="/v1/chat/completions"):
         self.responses = list(responses)
+        self.endpoint = endpoint
         self.requests = []
         self.auth_present = []
 
@@ -28,8 +29,9 @@ class LocalProvider:
                 size = int(self.headers.get("Content-Length", "0"))
                 body = json.loads(self.rfile.read(size))
                 provider.requests.append(body)
-                provider.auth_present.append(self.headers.get("Authorization", "").startswith("Bearer "))
-                if self.path != "/v1/chat/completions" or not provider.responses:
+                provider.auth_present.append(self.headers.get("Authorization", "").startswith("Bearer ")
+                                             or bool(self.headers.get("X-Api-Key")))
+                if self.path != provider.endpoint or not provider.responses:
                     response = (404, {"error": {"message": "测试响应已用完", "type": "not_found"}})
                 else:
                     response = provider.responses.pop(0)
