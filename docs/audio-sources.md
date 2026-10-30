@@ -73,24 +73,24 @@ FLAC 是转存格式，不代表恢复了 MP3 来源丢失的信息。完整取�
 完整原档复制到本地 `.scratch/audio-import/originals/user-10-28/`（不进入Git），混音素材放在 `sounds/user_10_28/`。
 来源文件名和耳聆网声音ID保留在 [`sources.json`](../sounds/user_10_28/sources.json)，并记录原档和处理后文件的SHA256。
 
-| 名称 | 来源ID | 原始长度 | 混音片段 | 许可核对 |
+| 名称 | 来源ID | 原始长度 | 混音片段 | 使用许可记录 |
 | --- | --- | --- | --- | --- |
-| 日本东京地铁实地录音 | [19085](https://www.ear0.com/sound/show/soundid-19085) | 约130秒 | 0–60秒 | 待核实 |
-| 日本东京银座中央通大道 | [23340](https://www.ear0.com/sound/show/soundid-23340) | 约187秒 | 0–60秒 | 待核实 |
-| 日本京都人行横道 | [19789](https://www.ear0.com/sound/show/soundid-19789) | 约14秒 | 全段 | 待核实 |
-| 寺庙钟声 | [34166](https://www.ear0.com/sound/show/soundid-34166) | 约544秒 | 463–523秒 | 待核实 |
-| 大海浪潮 | [38510](https://www.ear0.com/sound/show/soundid-38510) | 约171秒 | 0–60秒 | 待核实 |
+| 日本东京地铁实地录音 | [19085](https://www.ear0.com/sound/show/soundid-19085) | 约130秒 | 0–60秒 | 用户已确认免费且有许可 |
+| 日本东京银座中央通大道 | [23340](https://www.ear0.com/sound/show/soundid-23340) | 约187秒 | 0–60秒 | 用户已确认免费且有许可 |
+| 日本京都人行横道 | [19789](https://www.ear0.com/sound/show/soundid-19789) | 约14秒 | 全段 | 用户已确认免费且有许可 |
+| 寺庙钟声 | [34166](https://www.ear0.com/sound/show/soundid-34166) | 约544秒 | 463–523秒 | 用户已确认免费且有许可 |
+| 大海浪潮 | [38510](https://www.ear0.com/sound/show/soundid-38510) | 约171秒 | 0–60秒 | 用户已确认免费且有许可 |
 | 沙滩上浪涌 | [38511](https://www.ear0.com/sound/show/soundid-38511) | 约127秒 | 0–60秒 | 来源页标注CC0，上传者林壮士 |
-| 火车汽笛 | [11776](https://www.ear0.com/sound/show/soundid-11776) | 约54秒 | 全段 | 待核实 |
-| 乌鸦叫声 | [13402](https://www.ear0.com/sound/show/soundid-13402) | 约47秒 | 全段 | 待核实 |
-| 春日的布谷鸟声 | [13845](https://www.ear0.com/sound/show/soundid-13845) | 约47秒 | 全段 | 待核实 |
-| 海鸥叫声 | [19742](https://www.ear0.com/sound/show/soundid-19742) | 约40秒 | 全段 | 待核实 |
+| 火车汽笛 | [11776](https://www.ear0.com/sound/show/soundid-11776) | 约54秒 | 全段 | 用户已确认免费且有许可 |
+| 乌鸦叫声 | [13402](https://www.ear0.com/sound/show/soundid-13402) | 约47秒 | 全段 | 用户已确认免费且有许可 |
+| 春日的布谷鸟声 | [13845](https://www.ear0.com/sound/show/soundid-13845) | 约47秒 | 全段 | 用户已确认免费且有许可 |
+| 海鸥叫声 | [19742](https://www.ear0.com/sound/show/soundid-19742) | 约40秒 | 全段 | 用户已确认免费且有许可 |
 
 钟声前段较静，所取一分钟位于录音后段较明显的声音区间；起止位置明确记录，不代表整份录音被删除。
 处理保留原声道，重采样至48000 Hz，加20 ms首尾淡化并校准峰值0.25，以24位PCM FLAC保存。
 不额外降噪、滤波或添加混响。这批是连续环境片段，均登记为loop；未另剪单次鸣笛、鸟叫或敲钟事件。
 
-只有沙滩浪涌的许可在本次来源页核对为CC0。其余来源查询未能确认具体许可，统一据实标为待核实，
-不依据文件名或网站整体宣传推断为CC0，输出说明会保留这个状态。
+2026-10-30用户确认本批十份素材全部免费且有使用许可，目录和试听页据此更新。
+其中沙滩浪涌已核对来源页标注CC0；其余九项以用户确认为依据，具体协议名称保留为未提供，输出说明保留这个依据。
 
 本机批次试听：`runs/user-10-28-preview/index.html`，每项最多30秒，便于先听音色再在Yoin中按名称调用。

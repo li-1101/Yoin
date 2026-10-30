@@ -10,11 +10,11 @@
       "source_file": "城市场景 日本街头/日本东京地铁实地录音_耳聆网_[声音ID：19085].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-19085",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/19085.wav",
       "source_bytes": 34339442,
       "source_seconds": 129.7785260770975,
@@ -28,7 +28,8 @@
       "output_seconds": 60.0,
       "output_sha256": "891b0448b8323b210fb8a90a06ced002dcf44f2032a1b6d095bbc4d0e050756b",
       "peak_before_calibration": 0.4325855076313019,
-      "applied_gain": 0.5779204240311216
+      "applied_gain": 0.5779204240311216,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_ginza_street_23340",
@@ -37,11 +38,11 @@
       "source_file": "城市场景 日本街头/日本东京银座中央通大道_耳聆网_[声音ID：23340].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-23340",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/23340.wav",
       "source_bytes": 32912270,
       "source_seconds": 186.57233560090702,
@@ -55,7 +56,8 @@
       "output_seconds": 60.0,
       "output_sha256": "3a602c20f4b95d84023df503e3f5a167382dcb8cc0f42e2a259c6d490bd545f2",
       "peak_before_calibration": 0.26764804124832153,
-      "applied_gain": 0.9340625054978533
+      "applied_gain": 0.9340625054978533,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_kyoto_crosswalk_19789",
@@ -64,11 +66,11 @@
       "source_file": "城市场景 日本街头/日本京都人行横道_耳聆网_[声音ID：19789].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-19789",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/19789.wav",
       "source_bytes": 2454264,
       "source_seconds": 13.91281179138322,
@@ -82,7 +84,8 @@
       "output_seconds": 13.9128125,
       "output_sha256": "54e33a9df266687274ca34d6944ef076511ba84949e14915351bb7f4960d9426",
       "peak_before_calibration": 0.08782488852739334,
-      "applied_gain": 2.846573496327557
+      "applied_gain": 2.846573496327557,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_temple_bell_34166",
@@ -91,11 +94,11 @@
       "source_file": "寺庙钟声_耳聆网_[声音ID：34166].mp3",
       "source_url": "https://www.ear0.com/sound/show/soundid-34166",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/34166.mp3",
       "source_bytes": 8686445,
       "source_seconds": 544.1515873015873,
@@ -109,7 +112,8 @@
       "output_seconds": 60.0,
       "output_sha256": "2b457a7e09291a4fa7544ff7ac500c20578011cda5c8f9dec7b98748e45fe87f",
       "peak_before_calibration": 0.7888838648796082,
-      "applied_gain": 0.3169034266382829
+      "applied_gain": 0.3169034266382829,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_ocean_swell_38510",
@@ -118,11 +122,11 @@
       "source_file": "水/大海浪潮 海浪 大浪 深海1_耳聆网_[声音ID：38510].mp3",
       "source_url": "https://www.ear0.com/sound/show/soundid-38510",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/38510.mp3",
       "source_bytes": 2740139,
       "source_seconds": 171.1919954648526,
@@ -136,7 +140,8 @@
       "output_seconds": 60.0,
       "output_sha256": "00832675d89949190833145c110994f5414ea02f05d41cff8e8a4b23a41f653d",
       "peak_before_calibration": 1.0368667840957642,
-      "applied_gain": 0.24111101236406296
+      "applied_gain": 0.24111101236406296,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_beach_surge_38511",
@@ -149,7 +154,7 @@
       "license_verified": true,
       "license_checked_on": "2026-10-30",
       "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "license_note": "来源页标注CC0，网页核对",
+      "license_note": "来源页标注CC0，网页核对；用户同时确认本批素材免费且有使用许可。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/38511.wav",
       "source_bytes": 73120190,
       "source_seconds": 126.93333333333334,
@@ -163,7 +168,8 @@
       "output_seconds": 60.0,
       "output_sha256": "2906f32f6cff625b104ff2c20b05be4a153573a02eb9dc909ff746d6e04cadc0",
       "peak_before_calibration": 0.4013475775718689,
-      "applied_gain": 0.6229014798407068
+      "applied_gain": 0.6229014798407068,
+      "license_status": "source_verified"
     },
     {
       "id": "user_ear0_train_whistle_11776",
@@ -172,11 +178,11 @@
       "source_file": "火车/火车汽笛_耳聆网_[声音ID：11776].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-11776",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/11776.wav",
       "source_bytes": 15687762,
       "source_seconds": 54.0101875,
@@ -190,7 +196,8 @@
       "output_seconds": 54.0101875,
       "output_sha256": "34eb947856fdd9ff547627e2beb8802a0638e3ee0219fe771dd0e2deb38ef9d4",
       "peak_before_calibration": 0.9999990463256836,
-      "applied_gain": 0.2500002384188065
+      "applied_gain": 0.2500002384188065,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_crow_13402",
@@ -199,11 +206,11 @@
       "source_file": "鸟/乌鸦叫声_耳聆网_[声音ID：13402].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-13402",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/13402.wav",
       "source_bytes": 6740792,
       "source_seconds": 46.6276875,
@@ -217,7 +224,8 @@
       "output_seconds": 46.6276875,
       "output_sha256": "38bae5b8031f3aa7045b24eeb4fafb86cd14ae4e817b30cd646cbe6f345282e0",
       "peak_before_calibration": 0.6740126609802246,
-      "applied_gain": 0.370912913766964
+      "applied_gain": 0.370912913766964,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_cuckoo_13845",
@@ -226,11 +234,11 @@
       "source_file": "鸟/春日的布谷鸟声_耳聆网_[声音ID：13845].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-13845",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/13845.wav",
       "source_bytes": 13457016,
       "source_seconds": 46.720166666666664,
@@ -244,7 +252,8 @@
       "output_seconds": 46.720166666666664,
       "output_sha256": "681ad442caf60b0894e6aabe4761551fb6f3bff1583ca158a25088c63de65fa3",
       "peak_before_calibration": 0.9642908573150635,
-      "applied_gain": 0.25925787650428517
+      "applied_gain": 0.25925787650428517,
+      "license_status": "user_confirmed"
     },
     {
       "id": "user_ear0_seagull_19742",
@@ -253,11 +262,11 @@
       "source_file": "鸟/海鸥叫声_耳聆网_[声音ID：19742].wav",
       "source_url": "https://www.ear0.com/sound/show/soundid-19742",
       "author": null,
-      "license": "待核实（用户提供，具体许可未确认）",
+      "license": "用户已确认：免费且有使用许可（具体协议类型未提供）",
       "license_verified": false,
       "license_checked_on": null,
       "license_url": null,
-      "license_note": "网页查询未能核实；不据文件名推断许可",
+      "license_note": "用户确认本批素材免费且有使用许可；具体协议类型未提供，尚未独立核对协议条款。",
       "cached_original": ".scratch/audio-import/originals/user-10-28/19742.wav",
       "source_bytes": 7076740,
       "source_seconds": 40.11732426303855,
@@ -271,7 +280,14 @@
       "output_seconds": 40.117333333333335,
       "output_sha256": "2857769ff4cb4e3526cc5429f977ff006dd79e4889ad80b745f598091a8530b4",
       "peak_before_calibration": 0.31589648127555847,
-      "applied_gain": 0.7913984954518168
+      "applied_gain": 0.7913984954518168,
+      "license_status": "user_confirmed"
     }
-  ]
+  ],
+  "user_confirmation": {
+    "confirmed_on": "2026-10-30",
+    "confirmed_by": "user",
+    "statement": "这些都是免费的有许可的。",
+    "scope": "本批十份素材"
+  }
 }

@@ -33,7 +33,7 @@
 - 日本城市场景可选 `user_ear0_tokyo_subway_19085`（东京地铁）、`user_ear0_ginza_street_23340`（银座街头）、`user_ear0_kyoto_crosswalk_19789`（京都人行横道）。按用户明确要求选用，不默认加入安静阅读模板。
 - 鸟声可选 `user_ear0_crow_13402`、`user_ear0_seagull_19742`、`user_ear0_cuckoo_13845`；海浪可选 `user_ear0_beach_surge_38511`、`user_ear0_ocean_swell_38510`。
 - 另有 `user_ear0_train_whistle_11776`（火车汽笛）和 `user_ear0_temple_bell_34166`（寺庙钟声）。这批十项均是连续片段，按 loop 使用，不填写事件频率；不把含多次声音的长片段描述成单声短事件。
-- 保留目录中逐项记录的许可。标为待核实的素材，不得在解释中宣称为 CC0 或已确认可商用。
+- 本批十份素材均由用户确认免费且有使用许可。提交说明沿用目录中逐项记录的许可依据：一项为来源页核对的 CC0，其余九项以用户确认为依据，具体协议名称未提供。
 
 ## 调整词典
 
