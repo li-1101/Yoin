@@ -181,7 +181,7 @@ class WebTests(unittest.TestCase):
 
     def test_model_configuration_routes_never_return_saved_keys(self):
         _, _, settings = self.json_request("GET", "/api/connections")
-        self.assertEqual(settings["active"], "environment")
+        self.assertEqual(settings["active"], "openai")
         self.assertEqual(len(settings["profiles"]), 3)
         for provider in ["claude", "openai", "deepseek"]:
             status, _, settings = self.json_request("POST", "/api/connections/save", {
@@ -194,7 +194,7 @@ class WebTests(unittest.TestCase):
         _, _, settings = self.json_request("POST", "/api/connections/save", {"provider": "openai", "model": "changed"})
         self.assertTrue(next(profile for profile in settings["profiles"] if profile["provider"] == "openai")["configured"])
         _, _, settings = self.json_request("POST", "/api/connections/delete", {"provider": "openai"})
-        self.assertEqual(settings["active"], "environment")
+        self.assertEqual(settings["active"], "openai")
         _, _, public = self.json_request("GET", "/api/connections")
         self.assertNotIn("test-web-private", json.dumps(public))
         self.assertEqual(self.request("GET", "/.yoin/connections.json")[0], 404)
@@ -225,6 +225,7 @@ class WebTests(unittest.TestCase):
         self.server.app.model_factory = None
         store = self.server.app.connections
         store.save({"provider": "openai", "api_key": "original-key", "model": "original-model"})
+        store.save({"provider": "deepseek", "api_key": "next-key"})
         store.select({"provider": "openai"})
         entered, release = threading.Event(), threading.Event()
         choices = []
@@ -241,7 +242,7 @@ class WebTests(unittest.TestCase):
                 _, _, started = self.json_request("POST", "/api/jobs", {"request": "阅读"})
                 self.assertTrue(entered.wait(5))
                 store.save({"provider": "openai", "api_key": "replacement-key", "model": "replacement-model"})
-                store.select({"provider": "codex"})
+                store.select({"provider": "deepseek"})
             finally:
                 release.set()
             job = self.wait_job(started["job_id"])
@@ -249,7 +250,35 @@ class WebTests(unittest.TestCase):
         self.assertEqual(job["run"]["model"], "original-model")
         self.assertEqual(choices[0].provider, "openai")
         self.assertEqual(choices[0].config.api_key, "original-key")
-        self.assertEqual(store.choice().provider, "codex")
+        self.assertEqual(store.choice().provider, "deepseek")
+
+    def test_web_requires_api_key_and_rejects_legacy_login_options(self):
+        self.server.app.model_factory = None
+        store = self.server.app.connections
+        store.directory.mkdir(parents=True, exist_ok=True)
+        with patch("yoin.codex_model.CodexModel") as local_login, patch("yoin.model.create_model") as environment:
+            for legacy in ["environment", "codex"]:
+                store.path.write_text(json.dumps({"version": 1, "active": legacy, "profiles": {}}))
+                status, _, settings = self.json_request("GET", "/api/connections")
+                self.assertEqual(status, 200)
+                self.assertEqual(settings["active"], "openai")
+                status, _, bootstrap = self.json_request("GET", "/api/bootstrap")
+                self.assertEqual(status, 200)
+                self.assertFalse(bootstrap["connection"]["ready"])
+                self.assertIn("GPT", bootstrap["connection"]["error"])
+                self.assertIn("API Key", bootstrap["connection"]["error"])
+                status, _, _ = self.json_request("POST", "/api/jobs", {"request": "阅读"})
+                self.assertEqual(status, 400)
+                for endpoint in ["select", "test"]:
+                    status, _, _ = self.json_request("POST", "/api/connections/" + endpoint, {"provider": legacy})
+                    self.assertEqual(status, 400)
+            local_login.assert_not_called()
+            environment.assert_not_called()
+        status, _, body = self.request("GET", "/")
+        self.assertEqual(status, 200)
+        self.assertNotIn(b'<option value="codex">', body)
+        self.assertNotIn(b'<option value="environment">', body)
+        self.assertIn(b'<option value="openai" selected>GPT', body)
 
 
 if __name__ == "__main__":

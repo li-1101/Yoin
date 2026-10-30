@@ -26,7 +26,7 @@ class ConnectionTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_three_profiles_persist_independently_without_public_keys(self):
-        self.assertEqual(self.store.public()["active"], "environment")
+        self.assertEqual(self.store.public()["active"], "openai")
         self.assertFalse(self.store.path.exists())
         for provider in ["claude", "openai", "deepseek"]:
             self.store.save({"provider": provider, "api_key": provider + "-private-key"})
@@ -57,18 +57,39 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(old.config.model, "first")
         self.assertEqual(old.config.api_key, "old-key")
 
-    def test_deleting_active_profile_restores_environment_and_keeps_other_profiles(self):
+    def test_deleting_active_profile_keeps_api_mode_and_other_profiles(self):
         self.store.save({"provider": "openai", "api_key": "key-a"})
         self.store.save({"provider": "deepseek", "api_key": "key-b"})
         self.store.select({"provider": "openai"})
         self.store.delete({"provider": "openai"})
-        self.assertEqual(self.store.public()["active"], "environment")
+        self.assertEqual(self.store.public()["active"], "openai")
         self.assertEqual(self.store.choice("deepseek").config.api_key, "key-b")
         self.assertNotIn("key-a", self.store.path.read_text())
         with self.assertRaisesRegex(YoinError, "先保存"):
             self.store.select({"provider": "openai"})
-        self.store.select({"provider": "codex"})
-        self.assertEqual(self.store.choice().provider, "codex")
+        with self.assertRaisesRegex(YoinError, "GPT.*API Key"):
+            self.store.choice(api_only=True)
+        for provider in ["codex", "environment"]:
+            with self.assertRaises(YoinError):
+                self.store.select({"provider": provider})
+            with self.assertRaises(YoinError):
+                self.store.test({"provider": provider})
+
+    def test_legacy_web_choices_resolve_to_gpt_key_without_changing_saved_profiles(self):
+        self.store.save({"provider": "openai", "api_key": "saved-gpt-key", "model": "saved-gpt-model"})
+        self.store.save({"provider": "claude", "api_key": "saved-claude-key"})
+        for legacy in ["environment", "codex"]:
+            data = json.loads(self.store.path.read_text())
+            data["active"] = legacy
+            self.store.path.write_text(json.dumps(data))
+            self.assertEqual(self.store.public()["active"], "openai")
+            self.assertEqual(self.store.public()["active_label"], "GPT · API Key")
+            selected = self.store.choice(api_only=True)
+            self.assertEqual(selected.provider, "openai")
+            self.assertEqual(selected.config.api_key, "saved-gpt-key")
+            self.assertEqual(selected.config.model, "saved-gpt-model")
+            self.assertEqual(self.store.choice("claude").config.api_key, "saved-claude-key")
+            self.assertEqual(self.store.choice().provider, legacy)  # CLI 兼容选择不受影响。
 
     def test_invalid_inputs_and_url_credentials_have_chinese_errors_without_secrets(self):
         cases = [

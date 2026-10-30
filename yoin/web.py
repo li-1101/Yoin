@@ -48,14 +48,13 @@ class AppState:
 
     def connection(self) -> dict:
         try:
-            factory = self.model_factory or self.connections.choice().create_model
+            factory = self.model_factory or self.connections.choice(api_only=True).create_model
             model, info = factory()
             model.close()
-            label = ("本机 Codex · 已登录" if info.get("provider") == "codex"
-                     else info.get("label", "模型 API") + " · 已配置")
+            label = info.get("label", "模型") + " API Key · 已配置"
             return {"ready": True, "label": label, "provider": info.get("provider", "api")}
         except YoinError as exc:
-            return {"ready": False, "label": "模型尚未连接", "error": str(exc)}
+            return {"ready": False, "label": "API Key 尚未配置或不可用", "error": str(exc)}
 
     def start(self, data: dict) -> dict:
         try:
@@ -74,7 +73,7 @@ class AppState:
             if self.active_job is not None:
                 raise YoinError("已有一个声音正在调配，请等它完成后再试")
             # 固定任务开始时的配置；在网页切换或替换密钥只影响下一次任务。
-            factory = self.model_factory or self.connections.choice().create_model
+            factory = self.model_factory or self.connections.choice(api_only=True).create_model
             job_id = uuid.uuid4().hex
             job = {"job_id": job_id, "status": "running", "run_id": None, "error": ""}
             self.jobs[job_id] = job

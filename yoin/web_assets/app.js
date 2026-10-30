@@ -180,24 +180,15 @@ let settingsBusy = false;
 function showConnectionFields() {
   const provider = $('modelProvider').value;
   const profile = savedConnections?.profiles.find((item) => item.provider === provider);
-  const isApi = Boolean(profile);
-  $('apiConnectionFields').hidden = !isApi;
-  $('localConnectionHint').hidden = isApi;
-  for (const id of ['modelName', 'modelBaseUrl', 'modelApiKey']) $(id).disabled = !isApi;
+  if (!profile) return;
   $('modelApiKey').value = '';
-  $('modelApiKey').required = isApi && !profile.configured;
-  $('saveConnection').hidden = !isApi;
-  $('deleteConnection').hidden = !profile?.configured;
-  $('connectionTestHint').hidden = provider === 'codex';
-  if (profile) {
-    $('modelName').value = profile.model;
-    $('modelBaseUrl').value = profile.base_url;
-    $('modelKeyState').textContent = profile.configured ? '已保存 · 留空沿用' : '尚未绑定';
-    $('modelProviderHint').textContent = provider === 'claude' ? 'CC 使用 Claude / Anthropic API Key。' : `填写 ${profile.label} 的 API Key。`;
-  } else {
-    $('localConnectionHint').textContent = provider === 'codex' ? '使用本机 Codex 已保存的 ChatGPT 登录，不需要在这里填写密钥。' : '沿用启动时的 YOIN_PROVIDER 等环境配置；没有 API 配置时使用本机 Codex。';
-  }
-  $('activeConnection').textContent = `当前使用：${savedConnections?.active_label || '原有环境配置'}`;
+  $('modelApiKey').required = !profile.configured;
+  $('deleteConnection').hidden = !profile.configured;
+  $('modelName').value = profile.model;
+  $('modelBaseUrl').value = profile.base_url;
+  $('modelKeyState').textContent = profile.configured ? '已保存 · 留空沿用' : '尚未绑定';
+  $('modelProviderHint').textContent = provider === 'claude' ? 'CC 使用 Claude / Anthropic API Key。' : `填写 ${profile.label} 的 API Key。`;
+  $('activeConnection').textContent = `当前使用：${savedConnections?.active_label || 'GPT · API Key'}`;
 }
 function settingsStatus(message, failed = false) {
   $('modelSettingsStatus').textContent = message;
@@ -227,7 +218,7 @@ async function saveSelectedConnection() {
 $('modelSettingsButton').addEventListener('click', async () => {
   try {
     savedConnections = await api('/api/connections');
-    $('modelProvider').value = savedConnections.active === 'environment' ? 'claude' : savedConnections.active;
+    $('modelProvider').value = savedConnections.profiles.some((profile) => profile.provider === savedConnections.active) ? savedConnections.active : 'openai';
     showConnectionFields(); settingsStatus(''); $('modelSettings').showModal();
   } catch (failure) { error(failure.message); }
 });

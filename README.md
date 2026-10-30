@@ -2,15 +2,15 @@
 
 **Your Own Inner Nook**
 
-将场景描述变成背景声音的实验。已接通本机登录的 Codex，并提供本地网页：描述场景、生成、对比初稿和终稿、文字微调、保存试听评分。
+将场景描述变成背景声音的实验。本地网页支持 Claude、GPT、DeepSeek API Key：描述场景、生成、对比初稿和终稿、文字微调、保存试听评分。
 
 ## 本地网页
 
-在本机 Codex 已通过 ChatGPT 登录的情况下，启动网页不需要另配 API Key：
+先启动本地网页，再在页面里配置 API Key：
 
 ```bash
 source .venv/bin/activate
-YOIN_PROVIDER=codex python -m yoin.web
+python -m yoin.web
 ```
 
 打开 <http://127.0.0.1:8787>。服务只监听本机；可用 `--port 8788` 更换端口，在启动服务的终端按 Ctrl-C 停止。
@@ -24,9 +24,10 @@ YOIN_PROVIDER=codex python -m yoin.web
 页面显示「已配置」只代表本地配置就绪，连接测试结果会另行显示。
 
 CC 在这里指 Claude / Anthropic API 接入，不使用 Claude Code 的登录或订阅凭据。
-「本机 Codex」继续复用已有 ChatGPT 登录；「原有环境配置」沿用下面的 `YOIN_PROVIDER` 等变量。
-未保存任何选择时，默认仍使用原有环境配置。
+网页只提供三家 API Key 入口，默认指向 GPT；旧的本机登录或环境选择也在网页中指向 GPT API Key。
+没有对应密钥时，网页提示配置并禁用生成，不会使用本机登录或环境变量兜底。
 选定入口同时用于网页生成、微调和 CLI；切换或替换密钥只影响下一次任务。
+CLI 仍兼容历史环境变量与本机 Codex 入口，只有命令行会读取这些历史选择。
 
 密钥以明文保存在本机 `.yoin/connections.json`，目录权限为 0700，文件权限为 0600。
 该目录不进入 Git；读取接口、运行快照和普通错误消息均不返回密钥，浏览器不持久保存密钥。
@@ -38,10 +39,9 @@ DeepSeek 使用其 [兼容接口](https://api-docs.deepseek.com/en/)和
 [非思考工具调用方式](https://api-docs.deepseek.com/guides/tool_calls/)。
 默认模型为 `claude-sonnet-5-5`、`gpt-5-mini`、`deepseek-flash`，可按密钥实际可用的模型修改。
 
-使用官方 [`codex exec`](https://learn.chatgpt.com/docs/non-interactive-mode) 复用现有登录与套餐额度；
-模型通过 Codex 服务推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
+网页使用选定 API 进行推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
+历史 CLI 使用官方 [`codex exec`](https://learn.chatgpt.com/docs/non-interactive-mode) 复用本机登录；
 登录方式见 [Codex authentication](https://learn.chatgpt.com/docs/auth)。
-当前实现优先使用已经验通的 Codex 入口。
 
 ## 安装和试听
 

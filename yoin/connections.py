@@ -74,7 +74,7 @@ class SaveConnection(DataModel):
 
 
 class SelectConnection(DataModel):
-    provider: Provider
+    provider: ApiProvider
 
 
 @dataclass(frozen=True)
@@ -145,7 +145,8 @@ class ConnectionStore:
             profiles.append({"provider": provider, **defaults, "configured": profile is not None,
                              "base_url": profile.base_url if profile else defaults["base_url"],
                              "model": profile.model if profile else defaults["model"]})
-        return {"active": settings.active, "active_label": LABELS[settings.active], "profiles": profiles}
+        active = settings.active if settings.active in DEFAULTS else "openai"
+        return {"active": active, "active_label": LABELS[active] + " · API Key", "profiles": profiles}
 
     def save(self, data: dict) -> dict:
         try:
@@ -175,7 +176,7 @@ class ConnectionStore:
             raise chinese_validation_error(exc, "模型选择") from exc
         with self._lock:
             settings = self._read()
-            if request.provider in DEFAULTS and request.provider not in settings.profiles:
+            if request.provider not in settings.profiles:
                 raise YoinError("请先保存这家的 API Key")
             settings.active = request.provider
             self._write(settings)
@@ -192,19 +193,22 @@ class ConnectionStore:
             settings = self._read()
             settings.profiles.pop(request.provider, None)
             if settings.active == request.provider:
-                settings.active = "environment"
+                settings.active = "openai"
             self._write(settings)
         return self.public()
 
-    def choice(self, provider: str | None = None) -> ConnectionChoice:
+    def choice(self, provider: str | None = None, *, api_only: bool = False) -> ConnectionChoice:
+        """网页只使用 API Key；CLI 仍可读取历史环境选择。"""
         with self._lock:
             settings = self._read()
         provider = settings.active if provider is None else provider
         if provider not in LABELS:
             raise YoinError("不支持的模型入口")
+        if api_only and provider not in DEFAULTS:
+            provider = "openai"
         profile = settings.profiles.get(provider)
         if provider in DEFAULTS and profile is None:
-            raise YoinError("请先保存这家的 API Key")
+            raise YoinError(f"请先在「模型设置」保存 {LABELS[provider]} 的 API Key，并使用此入口")
         config = ModelConfig(profile.api_key, profile.base_url, profile.model) if profile else None
         return ConnectionChoice(provider, config)
 
@@ -214,10 +218,8 @@ class ConnectionStore:
         except ValidationError as exc:
             raise chinese_validation_error(exc, "连接测试") from exc
         choice = self.choice(request.provider)
-        model, info = choice.create_model()
+        model, _ = choice.create_model()
         try:
-            if info.get("provider") == "codex":
-                return {"ok": True, "message": "本机 Codex 登录检查通过", "provider": request.provider}
             check = {"type": "function", "function": {"name": "yoin_connection_check",
                      "description": "验证工具调用连接，不执行任何操作。",
                      "parameters": {"type": "object", "properties": {"ok": {"type": "boolean"}},
