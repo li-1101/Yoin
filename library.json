@@ -457,5 +457,290 @@
     "tonal": true,
     "musical_key": null,
     "bpm": null
+  },
+  {
+    "id": "user_ear0_tokyo_subway_19085",
+    "name": "日本东京地铁实地录音",
+    "description": "地铁环境连续片段，保留原音的列车与现场背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_tokyo_subway_19085.flac",
+    "tags": [
+      "日本",
+      "东京",
+      "地铁",
+      "城市",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 19085 — https://www.ear0.com/sound/show/soundid-19085",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_ginza_street_23340",
+    "name": "日本东京银座中央通大道",
+    "description": "银座街头的连续环境片段，适合作城市场景背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_ginza_street_23340.flac",
+    "tags": [
+      "日本",
+      "东京",
+      "银座",
+      "街头",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 23340 — https://www.ear0.com/sound/show/soundid-23340",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_kyoto_crosswalk_19789",
+    "name": "日本京都人行横道",
+    "description": "京都人行横道的完整环境片段，保留现场提示音与街头背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_kyoto_crosswalk_19789.flac",
+    "tags": [
+      "日本",
+      "京都",
+      "人行横道",
+      "街头",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 19789 — https://www.ear0.com/sound/show/soundid-19789",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_temple_bell_34166",
+    "name": "寺庙钟声",
+    "description": "寺庙钟声的连续片段，选取原录音第463秒起的一分钟。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_temple_bell_34166.flac",
+    "tags": [
+      "寺庙",
+      "钟声",
+      "环境",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 34166 — https://www.ear0.com/sound/show/soundid-34166",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_ocean_swell_38510",
+    "name": "大海浪潮",
+    "description": "用户提供的海浪氛围音源片段，保留原音起伏。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_ocean_swell_38510.flac",
+    "tags": [
+      "大海",
+      "海浪",
+      "浪潮",
+      "深海",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 38510 — https://www.ear0.com/sound/show/soundid-38510",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_beach_surge_38511",
+    "name": "沙滩上浪涌",
+    "description": "沙滩浪涌的连续环境片段，保留浪涌与现场背景质感。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_beach_surge_38511.flac",
+    "tags": [
+      "沙滩",
+      "海浪",
+      "浪涌",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "林壮士（用户提供） — https://www.ear0.com/sound/show/soundid-38511",
+    "license": "CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+    "gain_db": 0.0,
+    "tonal": false,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_train_whistle_11776",
+    "name": "火车汽笛",
+    "description": "含火车汽笛的完整连续片段，并非剪成单次鸣笛的短事件。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_train_whistle_11776.flac",
+    "tags": [
+      "火车",
+      "汽笛",
+      "铁路",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 11776 — https://www.ear0.com/sound/show/soundid-11776",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_crow_13402",
+    "name": "乌鸦叫声",
+    "description": "乌鸦鸣叫的完整环境片段，保留录音中的停顿与背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "mono",
+    "file": "sounds/user_10_28/user_ear0_crow_13402.flac",
+    "tags": [
+      "乌鸦",
+      "鸟叫",
+      "自然",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 13402 — https://www.ear0.com/sound/show/soundid-13402",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_cuckoo_13845",
+    "name": "春日的布谷鸟声",
+    "description": "春日布谷鸟声的完整环境片段，保留自然停顿与背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_cuckoo_13845.flac",
+    "tags": [
+      "布谷鸟",
+      "春日",
+      "鸟叫",
+      "自然",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 13845 — https://www.ear0.com/sound/show/soundid-13845",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
+  },
+  {
+    "id": "user_ear0_seagull_19742",
+    "name": "海鸥叫声",
+    "description": "海鸥鸣叫的完整环境片段，保留原录音的背景。 用户10.28采集批次，按loop使用。",
+    "kind": "loop",
+    "channels": "stereo",
+    "file": "sounds/user_10_28/user_ear0_seagull_19742.flac",
+    "tags": [
+      "海鸥",
+      "海边",
+      "鸟叫",
+      "用户提供",
+      "10.28"
+    ],
+    "mood": [
+      "环境"
+    ],
+    "good_for": [
+      "场景氛围"
+    ],
+    "placeholder": false,
+    "source": "用户提供；耳聆网声音ID 19742 — https://www.ear0.com/sound/show/soundid-19742",
+    "license": "待核实（用户提供，具体许可未确认）",
+    "gain_db": 0.0,
+    "tonal": true,
+    "musical_key": null,
+    "bpm": null
   }
 ]

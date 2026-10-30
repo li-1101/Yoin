@@ -46,6 +46,8 @@ python -m yoin.render templates/quiet_reading.recipe.json --seconds 60 --out run
 萨蒂《第一号吉姆诺佩蒂》。可在场景里直接说曲名，下一次生成即会加载。
 四种 CC0 环境声保存在 `sounds/ambience/`：海浪拍岸、风吹树叶、篝火噼啪、夏夜虫鸣。
 在场景中直接写名称即可选用；本机 30 秒单独试听位于 `runs/ambience-preview/`。
+用户 `Downloads/10.28` 收集的十份素材已导入 `sounds/user_10_28/`，包含日本城市场景、鸟鸣、汽笛、钟声和海浪。
+本机独立试听在 `runs/user-10-28-preview/`；来源、完整原档缓存位置、取段及许可核对状态均在该批次 `sources.json` 中。
 
 生成七种占位声音不需要密钥或外部素材。占位声音是噪声、正弦和短脉冲，主要用于验证控制和流程。
 `pad_soft_01` 是合成和弦，不能当作真实爵士乐。输出为 48000 Hz、双声道、32 位浮点 WAV。
