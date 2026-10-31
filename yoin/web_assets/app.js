@@ -177,18 +177,38 @@ $('connection').addEventListener('click', () => connection().catch((failure) => 
 
 let savedConnections = null;
 let settingsBusy = false;
+function syncConnectionOptions() {
+  let option = $('modelProvider').querySelector('[value="codex"]');
+  if (savedConnections.local_codex_enabled) {
+    if (!option) { option = document.createElement('option'); option.value = 'codex'; $('modelProvider').append(option); }
+    option.textContent = '本机 Codex · 订阅测试';
+  } else if (option) option.remove();
+  $('modelSettingsIntro').textContent = savedConnections.local_codex_enabled
+    ? '本机订阅测试已开启，也可以选择各家的 API Key。' : '分别保存各家的密钥，选择这次想用的模型。';
+  $('modelProvider').value = savedConnections.active;
+}
 function showConnectionFields() {
   const provider = $('modelProvider').value;
+  const local = provider === 'codex' && savedConnections?.local_codex_enabled;
+  $('apiConnectionFields').hidden = local;
+  for (const field of $('apiConnectionFields').querySelectorAll('input')) field.disabled = local;
+  $('localCodexFields').hidden = !local;
+  $('saveConnection').hidden = local;
+  $('testConnection').textContent = local ? '检查本机登录' : '测试连接';
+  $('connectionTestHint').textContent = local
+    ? '检查登录不发送模型请求；实际生成和微调会使用你的 ChatGPT 订阅额度。'
+    : '测试会发送一条简短请求，使用所选 API 的额度；保存和切换不发送生成请求。';
+  $('activeConnection').textContent = `当前使用：${savedConnections?.active_label || 'GPT · API Key'}`;
+  $('modelApiKey').value = '';
+  if (local) { $('deleteConnection').hidden = true; return; }
   const profile = savedConnections?.profiles.find((item) => item.provider === provider);
   if (!profile) return;
-  $('modelApiKey').value = '';
   $('modelApiKey').required = !profile.configured;
   $('deleteConnection').hidden = !profile.configured;
   $('modelName').value = profile.model;
   $('modelBaseUrl').value = profile.base_url;
   $('modelKeyState').textContent = profile.configured ? '已保存 · 留空沿用' : '尚未绑定';
   $('modelProviderHint').textContent = provider === 'claude' ? 'CC 使用 Claude / Anthropic API Key。' : `填写 ${profile.label} 的 API Key。`;
-  $('activeConnection').textContent = `当前使用：${savedConnections?.active_label || 'GPT · API Key'}`;
 }
 function settingsStatus(message, failed = false) {
   $('modelSettingsStatus').textContent = message;
@@ -218,7 +238,7 @@ async function saveSelectedConnection() {
 $('modelSettingsButton').addEventListener('click', async () => {
   try {
     savedConnections = await api('/api/connections');
-    $('modelProvider').value = savedConnections.profiles.some((profile) => profile.provider === savedConnections.active) ? savedConnections.active : 'openai';
+    syncConnectionOptions();
     showConnectionFields(); settingsStatus(''); $('modelSettings').showModal();
   } catch (failure) { error(failure.message); }
 });
@@ -235,7 +255,8 @@ $('modelSettingsForm').addEventListener('submit', (event) => {
 $('testConnection').addEventListener('click', () => {
   if (!$('modelSettingsForm').reportValidity()) return;
   updateSettings(async () => {
-    await saveSelectedConnection(); settingsStatus('正在检查连接与工具调用，请稍等…');
+    await saveSelectedConnection();
+    settingsStatus($('modelProvider').value === 'codex' ? '正在检查本机登录状态…' : '正在检查连接与工具调用，请稍等…');
     const result = await api('/api/connections/test', { provider: $('modelProvider').value });
     settingsStatus(result.message);
   });

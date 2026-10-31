@@ -13,7 +13,7 @@
   <div class="shell">
     <header class="masthead">
       <a class="brand" href="/" aria-label="Yoin 余韵 — Your Own Inner Nook 首页"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy"><span class="brand-name">Yoin <span class="brand-cn">余韵</span></span><span class="brand-full">Your Own Inner Nook</span></span></a>
-      <div class="model-controls"><button class="connection" id="connection" type="button" title="刷新 API 配置"><span class="connection-dot"></span><span id="connectionText">读取 API 配置中</span><span aria-hidden="true">↻</span></button><button id="modelSettingsButton" class="quiet-button" type="button">模型设置</button></div>
+      <div class="model-controls"><button class="connection" id="connection" type="button" title="刷新模型状态"><span class="connection-dot"></span><span id="connectionText">读取模型状态中</span><span aria-hidden="true">↻</span></button><button id="modelSettingsButton" class="quiet-button" type="button">模型设置</button></div>
     </header>
 
     <main class="workspace">
@@ -61,7 +61,7 @@
   </div>
   <dialog id="modelSettings" class="model-dialog" aria-labelledby="modelSettingsTitle">
     <div class="section-heading"><h2 id="modelSettingsTitle">连接你的模型</h2><button id="closeModelSettings" class="quiet-button" type="button" aria-label="关闭模型设置">✕</button></div>
-    <p class="settings-intro">分别保存各家的密钥，选择这次想用的模型。</p>
+    <p id="modelSettingsIntro" class="settings-intro">分别保存各家的密钥，选择这次想用的模型。</p>
     <p id="activeConnection" class="active-connection"></p>
     <form id="modelSettingsForm">
       <label for="modelProvider">模型入口</label>
@@ -73,6 +73,10 @@
         <label for="modelName">模型名称</label><input id="modelName" maxlength="160" spellcheck="false" required>
         <details class="settings-advanced"><summary>服务地址</summary><label class="sr-only" for="modelBaseUrl">API 服务地址</label><input id="modelBaseUrl" type="url" maxlength="2000" spellcheck="false" required><p class="field-hint">已填官方地址，也可以改成你使用的兼容服务地址。</p></details>
         <p class="field-hint">密钥只保存在这台电脑的私有配置文件中，页面不会回填。已保存时留空表示沿用。</p>
+      </div>
+      <div id="localCodexFields" hidden>
+        <p class="field-hint">使用这台电脑上 Codex 已登录的 ChatGPT 账号，无需填写 API Key。生成和微调会使用该账号的订阅额度。</p>
+        <p class="field-hint">此入口仅在本次本机测试中开启，选择不会保存。模型沿用本机 Codex 入口的配置。</p>
       </div>
       <div class="settings-actions"><button id="saveConnection" type="submit" class="secondary-button">保存配置</button><button id="testConnection" type="button" class="secondary-button">测试连接</button><button id="useConnection" type="button" class="primary-button">使用此入口</button></div>
       <p id="connectionTestHint" class="field-hint">测试会发送一条简短请求，使用所选 API 的额度；保存和切换不发送生成请求。</p>

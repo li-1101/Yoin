@@ -8,11 +8,12 @@ import threading
 import time
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from yoin.agent import run_agent
 from yoin.connections import ConnectionChoice
-from yoin.web import make_server
+from yoin.errors import YoinError
+from yoin.web import main, make_server
 
 from .agent_helpers import ScriptedModel, completion, create_project, preview, submit
 from .fake_provider import LocalProvider
@@ -38,11 +39,22 @@ class WebTests(unittest.TestCase):
         self.port = self.server.server_port
         self.token = self.server.app.token
 
-    def tearDown(self):
+    def stop_server(self):
         self.server.shutdown()
         self.server.app.close()
         self.server.server_close()
         self.thread.join(5)
+
+    def restart_server(self, *, local_codex=False):
+        self.stop_server()
+        self.server = make_server(self.root, 0, local_codex=local_codex)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.port = self.server.server_port
+        self.token = self.server.app.token
+
+    def tearDown(self):
+        self.stop_server()
         self.temp.cleanup()
 
     def request(self, method, path, data=None, headers=None, raw=None):
@@ -262,6 +274,7 @@ class WebTests(unittest.TestCase):
                 status, _, settings = self.json_request("GET", "/api/connections")
                 self.assertEqual(status, 200)
                 self.assertEqual(settings["active"], "openai")
+                self.assertFalse(settings["local_codex_enabled"])
                 status, _, bootstrap = self.json_request("GET", "/api/bootstrap")
                 self.assertEqual(status, 200)
                 self.assertFalse(bootstrap["connection"]["ready"])
@@ -279,6 +292,159 @@ class WebTests(unittest.TestCase):
         self.assertNotIn(b'<option value="codex">', body)
         self.assertNotIn(b'<option value="environment">', body)
         self.assertIn(b'<option value="openai" selected>GPT', body)
+
+    def test_local_codex_selection_is_process_only_and_api_profiles_stay_independent(self):
+        self.restart_server(local_codex=True)
+        with patch("yoin.codex_model.CodexModel") as local:
+            local.return_value.public_info.return_value = {"provider": "codex", "model": "codex-default"}
+            status, _, settings = self.json_request("GET", "/api/connections")
+            self.assertEqual(status, 200)
+            self.assertTrue(settings["local_codex_enabled"])
+            self.assertEqual(settings["active"], "codex")
+            self.assertFalse(self.server.app.connections.path.exists())
+            _, _, bootstrap = self.json_request("GET", "/api/bootstrap")
+            self.assertTrue(bootstrap["connection"]["ready"])
+            self.assertEqual(bootstrap["connection"]["provider"], "codex")
+            self.assertIn("订阅测试", bootstrap["connection"]["label"])
+            status, _, checked = self.json_request("POST", "/api/connections/test", {"provider": "codex"})
+            self.assertEqual(status, 200)
+            self.assertTrue(checked["ok"])
+            self.assertIn("尚未发送模型请求", checked["message"])
+            local.return_value.complete.assert_not_called()
+            self.assertEqual(local.return_value.close.call_count, 2)
+            self.assertFalse(self.server.app.connections.path.exists())
+
+            for provider in ["openai", "deepseek"]:
+                status, _, settings = self.json_request("POST", "/api/connections/save", {
+                    "provider": provider, "api_key": "local-test-private-" + provider})
+                self.assertEqual(status, 200)
+                self.assertEqual(settings["active"], "codex")
+                self.assertNotIn("local-test-private", json.dumps(settings))
+            status, _, settings = self.json_request("POST", "/api/connections/select", {"provider": "deepseek"})
+            self.assertEqual(status, 200)
+            self.assertEqual(settings["active"], "deepseek")
+            saved = self.server.app.connections.path.read_bytes()
+            status, _, settings = self.json_request("POST", "/api/connections/select", {"provider": "codex"})
+            self.assertEqual(status, 200)
+            self.assertEqual(settings["active"], "codex")
+            self.assertEqual(self.server.app.connections.path.read_bytes(), saved)
+            self.assertEqual(self.server.app.connections.choice().provider, "deepseek")
+
+            # 删除 API 配置不会改变本机订阅选择，也不把订阅选择写回磁盘。
+            _, _, settings = self.json_request("POST", "/api/connections/delete", {"provider": "deepseek"})
+            self.assertEqual(settings["active"], "codex")
+            self.assertEqual(self.server.app.connections.public()["active"], "openai")
+            calls = local.call_count
+            self.restart_server()
+            _, _, settings = self.json_request("GET", "/api/connections")
+            self.assertFalse(settings["local_codex_enabled"])
+            self.assertEqual(settings["active"], "openai")
+            _, _, bootstrap = self.json_request("GET", "/api/bootstrap")
+            self.assertEqual(bootstrap["connection"]["provider"], "openai")
+            for endpoint in ["select", "test", "save", "delete"]:
+                status, _, _ = self.json_request("POST", "/api/connections/" + endpoint, {"provider": "codex"})
+                self.assertEqual(status, 400)
+            self.assertEqual(local.call_count, calls)
+
+    def test_missing_local_login_never_falls_back_to_a_saved_api_key(self):
+        self.restart_server(local_codex=True)
+        store = self.server.app.connections
+        store.save({"provider": "deepseek", "api_key": "unused-private-key"})
+        store.select({"provider": "deepseek"})
+        with patch("yoin.codex_model.CodexModel", side_effect=YoinError("请先运行 codex login")), \
+                patch("yoin.model.ChatModel") as api_model, patch("yoin.model.create_model") as environment:
+            _, _, bootstrap = self.json_request("GET", "/api/bootstrap")
+            self.assertFalse(bootstrap["connection"]["ready"])
+            self.assertIn("Codex", bootstrap["connection"]["label"])
+            self.assertIn("codex login", bootstrap["connection"]["error"])
+            status, _, _ = self.json_request("POST", "/api/connections/test", {"provider": "codex"})
+            self.assertEqual(status, 400)
+            status, _, started = self.json_request("POST", "/api/jobs", {"request": "阅读"})
+            self.assertEqual(status, 202)
+            job = self.wait_job(started["job_id"])
+            self.assertEqual(job["status"], "failed")
+            self.assertIsNone(job["run_id"])
+            self.assertIn("codex login", job["error"])
+            api_model.assert_not_called()
+            environment.assert_not_called()
+
+    def test_local_codex_jobs_freeze_selection_and_refinement_uses_the_next_choice(self):
+        self.restart_server(local_codex=True)
+        store = self.server.app.connections
+        store.save({"provider": "deepseek", "api_key": "next-private-key", "model": "next-model"})
+        entered, release = threading.Event(), threading.Event()
+        choices = []
+
+        def build(choice):
+            choices.append(choice)
+            if len(choices) == 1:
+                entered.set()
+                release.wait(10)
+            return ScriptedModel([completion(preview()), completion(submit())]), {
+                "provider": choice.provider, "model": choice.config.model if choice.config else "local-test-model"}
+
+        with patch.object(ConnectionChoice, "create_model", build):
+            try:
+                status, _, started = self.json_request("POST", "/api/jobs", {"request": "阅读"})
+                self.assertEqual(status, 202)
+                self.assertTrue(entered.wait(5))
+                status, _, settings = self.json_request("POST", "/api/connections/select", {"provider": "deepseek"})
+                self.assertEqual(status, 200)
+                self.assertEqual(settings["active"], "deepseek")
+            finally:
+                release.set()
+            first = self.wait_job(started["job_id"])
+            self.assertEqual(first["status"], "completed", first)
+            self.assertEqual(first["run"]["provider"], "codex")
+            self.assertEqual(choices[0].provider, "codex")
+            status, _, started = self.json_request("POST", "/api/jobs", {
+                "request": "背景轻一点", "from_run": first["run_id"]})
+            self.assertEqual(status, 202)
+            second = self.wait_job(started["job_id"])
+            self.assertEqual(second["status"], "completed", second)
+            self.assertEqual(second["run"]["provider"], "deepseek")
+            self.assertEqual(second["run"]["parent_run_id"], first["run_id"])
+            self.assertEqual(choices[1].config.api_key, "next-private-key")
+            self.json_request("POST", "/api/connections/select", {"provider": "codex"})
+            _, _, started = self.json_request("POST", "/api/jobs", {
+                "request": "再远一点", "from_run": second["run_id"]})
+            third = self.wait_job(started["job_id"])
+            self.assertEqual(third["status"], "completed", third)
+            self.assertEqual(third["run"]["provider"], "codex")
+            self.assertEqual(third["run"]["parent_run_id"], second["run_id"])
+            self.assertEqual(choices[2].provider, "codex")
+
+    def test_local_codex_http_requests_cannot_enable_or_expand_the_startup_capability(self):
+        self.restart_server(local_codex=True)
+        self.assertEqual(self.server.server_address[0], "127.0.0.1")
+        with patch("yoin.codex_model.CodexModel") as local:
+            for endpoint in ["select", "test"]:
+                for headers in [{"Origin": "https://example.com"}, {"Host": "example.com"}, {"X-Yoin-Token": ""}]:
+                    status, _, _ = self.json_request("POST", "/api/connections/" + endpoint,
+                                                     {"provider": "codex"}, headers=headers)
+                    self.assertEqual(status, 403)
+                for data in [{"provider": "codex", "local_codex": True}, {"provider": "environment"}]:
+                    status, _, _ = self.json_request("POST", "/api/connections/" + endpoint, data)
+                    self.assertEqual(status, 400)
+            local.assert_not_called()
+        self.restart_server()
+        for endpoint, data in [("/api/connections/select", {"provider": "codex", "local_codex_enabled": True}),
+                               ("/api/jobs", {"request": "阅读", "provider": "codex"})]:
+            status, _, _ = self.json_request("POST", endpoint, data)
+            self.assertEqual(status, 400)
+
+    def test_cli_enables_local_codex_only_with_the_explicit_startup_flag(self):
+        for arguments, enabled in [([], False), (["--local-codex"], True)]:
+            server = Mock()
+            server.serve_forever.side_effect = KeyboardInterrupt
+            with patch.object(sys, "argv", ["yoin.web", "--port", "0", *arguments]), \
+                    patch.dict(os.environ, {"YOIN_PROVIDER": "codex", "YOIN_LOCAL_CODEX": "1"}), \
+                    patch("yoin.web.project_root", return_value=self.root), \
+                    patch("yoin.web.make_server", return_value=server) as build, patch("builtins.print"):
+                self.assertEqual(main(), 0)
+            build.assert_called_once_with(self.root, 0, local_codex=enabled)
+            server.app.close.assert_called_once()
+            server.server_close.assert_called_once()
 
 
 if __name__ == "__main__":

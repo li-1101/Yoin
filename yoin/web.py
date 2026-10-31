@@ -10,7 +10,7 @@ import threading
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from pydantic import Field, ValidationError
@@ -18,13 +18,18 @@ from pydantic import Field, ValidationError
 from .agent import run_agent
 from .cli import ChineseArgumentParser, run_cli
 from .config import project_root
-from .connections import ConnectionStore
+from .connections import ConnectionChoice, ConnectionStore
 from .errors import YoinError
 from .runs import RunStore
 from .schema import DataModel, chinese_validation_error
 from .trace import RunTrace
 
 ASSETS = Path(__file__).with_name("web_assets")
+LOCAL_CODEX_LABEL = "本机 Codex · 订阅测试"
+
+
+class WebConnectionSelection(DataModel):
+    provider: Literal["claude", "openai", "deepseek", "codex"]
 
 
 class JobRequest(DataModel):
@@ -33,28 +38,85 @@ class JobRequest(DataModel):
 
 
 class AppState:
-    def __init__(self, root: Path, model_factory=None):
+    def __init__(self, root: Path, model_factory=None, *, local_codex: bool = False):
         self.root = root
         self.store = RunStore(root)
         self.connections = ConnectionStore(root)
         self.model_factory = model_factory
+        # 能力只由启动参数开启；订阅选择仅存在于当前进程，不进入持久配置。
+        self.local_codex_enabled = local_codex
+        self._using_local_codex = local_codex
         self.token = secrets.token_urlsafe(32)
         self.jobs = {}
         self.active_job = None
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
         self._model = None
         self._worker = None
         self._closed = False
 
+    def connection_settings(self) -> dict:
+        with self.lock:
+            settings = self.connections.public()
+            settings["local_codex_enabled"] = self.local_codex_enabled
+            if self.local_codex_enabled and self._using_local_codex:
+                settings.update(active="codex", active_label=LOCAL_CODEX_LABEL)
+        return settings
+
+    def _selection(self, data: dict) -> WebConnectionSelection:
+        try:
+            request = WebConnectionSelection.model_validate(data)
+        except ValidationError as exc:
+            raise chinese_validation_error(exc, "模型选择") from exc
+        if request.provider == "codex" and not self.local_codex_enabled:
+            raise YoinError("本机 Codex 测试入口未开启，须在本机以 --local-codex 启动服务")
+        return request
+
+    def select_connection(self, data: dict) -> dict:
+        request = self._selection(data)
+        with self.lock:
+            if request.provider != "codex":
+                self.connections.select(data)
+            self._using_local_codex = request.provider == "codex"
+            return self.connection_settings()
+
+    def save_connection(self, data: dict) -> dict:
+        with self.lock:
+            self.connections.save(data)
+            return self.connection_settings()
+
+    def delete_connection(self, data: dict) -> dict:
+        with self.lock:
+            self.connections.delete(data)
+            return self.connection_settings()
+
+    def test_connection(self, data: dict) -> dict:
+        request = self._selection(data)
+        if request.provider != "codex":
+            return self.connections.test(data)
+        model, _ = ConnectionChoice("codex").create_model()
+        model.close()
+        return {"ok": True, "provider": "codex",
+                "message": "本机 Codex 已通过 ChatGPT 登录；仅检查登录状态，尚未发送模型请求。"}
+
+    def _model_factory(self):
+        with self.lock:
+            if self.model_factory is not None:
+                return self.model_factory
+            if self.local_codex_enabled and self._using_local_codex:
+                return ConnectionChoice("codex").create_model
+            return self.connections.choice(api_only=True).create_model
+
     def connection(self) -> dict:
         try:
-            factory = self.model_factory or self.connections.choice(api_only=True).create_model
-            model, info = factory()
+            model, info = self._model_factory()()
             model.close()
-            label = info.get("label", "模型") + " API Key · 已配置"
+            label = (LOCAL_CODEX_LABEL + " · 已登录" if info.get("provider") == "codex"
+                     else info.get("label", "模型") + " API Key · 已配置")
             return {"ready": True, "label": label, "provider": info.get("provider", "api")}
         except YoinError as exc:
-            return {"ready": False, "label": "API Key 尚未配置或不可用", "error": str(exc)}
+            with self.lock:
+                label = "本机 Codex 尚未就绪" if self.local_codex_enabled and self._using_local_codex else "API Key 尚未配置或不可用"
+            return {"ready": False, "label": label, "error": str(exc)}
 
     def start(self, data: dict) -> dict:
         try:
@@ -73,7 +135,7 @@ class AppState:
             if self.active_job is not None:
                 raise YoinError("已有一个声音正在调配，请等它完成后再试")
             # 固定任务开始时的配置；在网页切换或替换密钥只影响下一次任务。
-            factory = self.model_factory or self.connections.choice(api_only=True).create_model
+            factory = self._model_factory()
             job_id = uuid.uuid4().hex
             job = {"job_id": job_id, "status": "running", "run_id": None, "error": ""}
             self.jobs[job_id] = job
@@ -144,8 +206,8 @@ class AppState:
         return result
 
 
-def make_server(root: Path | str, port: int = 8787, *, model_factory=None):
-    app = AppState(Path(root).resolve(), model_factory)
+def make_server(root: Path | str, port: int = 8787, *, model_factory=None, local_codex: bool = False):
+    app = AppState(Path(root).resolve(), model_factory, local_codex=local_codex)
 
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
@@ -242,7 +304,7 @@ def make_server(root: Path | str, port: int = 8787, *, model_factory=None):
                 elif path == "/api/runs":
                     self._json(200, {"runs": app.store.list()})
                 elif path == "/api/connections":
-                    self._json(200, app.connections.public())
+                    self._json(200, app.connection_settings())
                 elif path.startswith("/api/runs/"):
                     self._json(200, app.store.get(path.removeprefix("/api/runs/")))
                 elif path.startswith("/api/jobs/"):
@@ -287,13 +349,13 @@ def make_server(root: Path | str, port: int = 8787, *, model_factory=None):
                     run_id = data.pop("run_id", None)
                     self._json(201, app.store.rate(run_id, data))
                 elif self.path == "/api/connections/save":
-                    self._json(200, app.connections.save(data))
+                    self._json(200, app.save_connection(data))
                 elif self.path == "/api/connections/select":
-                    self._json(200, app.connections.select(data))
+                    self._json(200, app.select_connection(data))
                 elif self.path == "/api/connections/delete":
-                    self._json(200, app.connections.delete(data))
+                    self._json(200, app.delete_connection(data))
                 elif self.path == "/api/connections/test":
-                    self._json(200, app.connections.test(data))
+                    self._json(200, app.test_connection(data))
                 else:
                     self._json(404, {"error": "找不到该操作"})
             except (BrokenPipeError, ConnectionResetError):
@@ -322,14 +384,17 @@ def port_argument(value: str) -> int:
 def main():
     parser = ChineseArgumentParser(description="启动 Yoin 本地试听页面")
     parser.add_argument("--port", type=port_argument, default=os.environ.get("YOIN_WEB_PORT", "8787"), help="本机端口，默认 8787")
+    parser.add_argument("--local-codex", action="store_true", help="仅本机订阅测试：启用并默认使用已登录的 Codex，不保存此选择")
     args = parser.parse_args()
 
     def action():
         try:
-            server = make_server(project_root(), args.port)
+            server = make_server(project_root(), args.port, local_codex=args.local_codex)
         except OSError as exc:
             raise YoinError("本机端口无法使用，请换一个 --port") from exc
         print(f"Yoin 已启动：http://127.0.0.1:{server.server_port}", flush=True)
+        if args.local_codex:
+            print("本机 Codex 订阅测试已开启，仅当前进程有效；生成和微调将使用本机登录账号的订阅额度。", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

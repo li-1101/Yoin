@@ -24,10 +24,38 @@ python -m yoin.web
 页面显示「已配置」只代表本地配置就绪，连接测试结果会另行显示。
 
 CC 在这里指 Claude / Anthropic API 接入，不使用 Claude Code 的登录或订阅凭据。
-网页只提供三家 API Key 入口，默认指向 GPT；旧的本机登录或环境选择也在网页中指向 GPT API Key。
+普通启动时，网页只提供三家 API Key 入口，默认指向 GPT；旧的本机登录或环境选择也在网页中指向 GPT API Key。
 没有对应密钥时，网页提示配置并禁用生成，不会使用本机登录或环境变量兜底。
-选定入口同时用于网页生成、微调和 CLI；切换或替换密钥只影响下一次任务。
+选定 API Key 入口同时用于网页生成、微调和 CLI；切换或替换密钥只影响下一次任务。
 CLI 仍兼容历史环境变量与本机 Codex 入口，只有命令行会读取这些历史选择。
+
+### 仅自己使用的本机订阅测试
+
+如果要复用这台电脑上 Codex 已登录的 ChatGPT 订阅，在项目目录显式启动：
+
+```bash
+source .venv/bin/activate
+python -m yoin.web --local-codex
+```
+
+仍打开 <http://127.0.0.1:8787>。本次进程会默认使用「本机 Codex · 订阅测试」，
+也可在「模型设置」切换回已配置的 API Key。「检查本机登录」只调用官方 CLI 检查登录状态，
+不发送模型请求；生成和微调才使用该账号的 Codex 订阅额度。缺少安装或登录时会明确报错，不会转用其他账号或 API。
+模型沿用已有本机 Codex 入口，可用 `YOIN_CODEX_MODEL` 指定该账号在 Codex 中可用的模型；这不是 ChatGPT 网页 Pro 模式的通用 API。
+
+本机订阅选择只存在于当前服务进程，不写入 `.yoin/connections.json`，不改变 CLI 已保存的选择。
+停止后用普通 `python -m yoin.web` 重启，后端即拒绝本机 Codex 的选择、检查与生成；
+浏览器请求、旧配置和 `YOIN_PROVIDER=codex` 都不能为普通网页服务开启此能力。
+运行中切换入口只影响下一次生成或微调。
+
+该模式仅用于本人本机测试：服务只监听 `127.0.0.1`，保留 Host、Origin 和会话 token 校验。
+不要将开启此模式的进程通过反向代理或隧道开放给访客；同一电脑上的访问也不等同于独立的用户身份认证。
+分享代码不会携带本机登录；部署环境不应启用此开关，也不应安装你的个人登录凭据。
+Yoin 不读取或复制 Codex 认证文件，凭据仍由官方 Codex 管理，不能将其提交到 Git。
+官方入口和使用边界见 [Codex authentication](https://learn.chatgpt.com/docs/auth) 与
+[non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)。
+
+### 本地数据与模型接口
 
 密钥以明文保存在本机 `.yoin/connections.json`，目录权限为 0700，文件权限为 0600。
 该目录不进入 Git；读取接口、运行快照和普通错误消息均不返回密钥，浏览器不持久保存密钥。
@@ -39,7 +67,7 @@ DeepSeek 使用其 [兼容接口](https://api-docs.deepseek.com/en/)和
 [非思考工具调用方式](https://api-docs.deepseek.com/guides/tool_calls/)。
 默认模型为 `claude-sonnet-5-5`、`gpt-5-mini`、`deepseek-flash`，可按密钥实际可用的模型修改。
 
-网页使用选定 API 进行推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
+网页使用选定模型入口进行推理，音频在本机渲染，音频和评分保存在项目的 `runs/` 中。
 历史 CLI 使用官方 [`codex exec`](https://learn.chatgpt.com/docs/non-interactive-mode) 复用本机登录；
 登录方式见 [Codex authentication](https://learn.chatgpt.com/docs/auth)。
 
